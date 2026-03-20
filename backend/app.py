@@ -15,7 +15,7 @@ def index():
     return "Rhonda Backend is live."
 
 
-@app.route('/healthz')
+@app.route('/')
 def health():
     return jsonify({"status": "healthy"}), 200
 
