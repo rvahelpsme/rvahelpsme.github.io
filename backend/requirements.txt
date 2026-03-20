@@ -1,0 +1,7 @@
+flask
+flask-cors
+gunicorn
+google-generativeai
+supabase
+gspread
+python-dotenv
