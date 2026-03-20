@@ -1,0 +1,18 @@
+# Secrets and API Keys
+.env
+service_account.json
+*.json
+!package.json
+
+# Python Environment
+venv/
+__pycache__/
+*.py[cod]
+
+# IDE Settings
+.idea/
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
