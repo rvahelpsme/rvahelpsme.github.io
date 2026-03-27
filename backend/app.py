@@ -12,13 +12,7 @@ CORS(app)
 
 @app.route('/')
 def index():
-    return "Rhonda Backend is live."
-
-
-@app.route('/healthz')
-def health():
-    return jsonify({"status": "healthy"}), 200
-
+    return str(app.url_map)
 
 @app.route('/chat', methods=['POST'])
 def chat():
