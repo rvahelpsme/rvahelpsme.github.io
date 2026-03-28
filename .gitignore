@@ -1,6 +1,6 @@
 # Secrets and API Keys
-.env
-service_account.json
+backend/.env
+backend/service_account.json
 *.json
 !package.json
 

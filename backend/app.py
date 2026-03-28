@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from datetime import datetime, timezone
 from passphrase import generate_passphrase, get_passphrase_hash
+from resources import get_verified_directory
 
 load_dotenv()
 
@@ -98,10 +99,16 @@ def access_passport():
         "state_json": passport_data['state_json']
     }), 200
 
+
 @app.route('/chat', methods=['POST'])
 def chat():
-    return jsonify({"response": "Chat endpoint pending Context Injection refactor.", "status": "pending"})
+    directory = get_verified_directory()
 
+    if not directory:
+        return jsonify({
+            "response": "I'm having trouble accessing my verified resources right now. Please call 2-1-1 for immediate assistance with live interpreters.",
+            "status": "fallback"
+        })
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
