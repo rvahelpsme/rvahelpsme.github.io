@@ -25,8 +25,8 @@
     </div>
 
     <script>
-        // Your active Cloud Run backend URL
-        const BACKEND_URL = "https://rhonda-backend-1071663876445.us-east4.run.app";
+        const BACKEND_URL = "http://127.0.0.1:8080";
+        let currentSessionHash = null;
 
         function appendMessage(sender, text, className) {
             const box = document.getElementById('chat-box');
@@ -40,6 +40,7 @@
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const message = input.value.trim();
+
             if (!message) return;
 
             appendMessage('You', message, 'user-msg');
@@ -49,15 +50,24 @@
                 const response = await fetch(`${BACKEND_URL}/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({
+                        message: message,
+                        session_hash: currentSessionHash
+                    })
                 });
 
                 const data = await response.json();
 
-                if (data.status === 'success') {
+                if (response.ok && data.status === 'success') {
+                    if (data.session_hash) {
+                        currentSessionHash = data.session_hash;
+                    }
+                    if (data.new_passphrase) {
+                        console.log("System assigned new passphrase:", data.new_passphrase);
+                    }
                     appendMessage('Rhonda', data.response, 'rhonda-msg');
                 } else {
-                    appendMessage('System', 'Error: Invalid response format from server.', 'rhonda-msg');
+                    appendMessage('System', `Error: ${data.error || 'Invalid response'}`, 'rhonda-msg');
                 }
             } catch (error) {
                 appendMessage('System', `Connection error: ${error.message}`, 'rhonda-msg');

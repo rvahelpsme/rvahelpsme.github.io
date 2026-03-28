@@ -3,17 +3,41 @@ import json
 import re
 
 
-def build_system_instruction(state, directory):
-    prompt_path = os.path.join(os.path.dirname(__file__), 'master_prompt.txt')
+def build_system_instruction(state, context_data, is_admin=False):
+    base_dir = os.path.dirname(os.path.dirname(__file__))
+    master_path = os.path.join(base_dir, 'MASTER_PROMPT.txt')
 
-    with open(prompt_path, 'r', encoding='utf-8') as f:
-        base_prompt = f.read().strip()
+    try:
+        with open(master_path, 'r', encoding='utf-8') as f:
+            instruction = f.read().strip()
+    except FileNotFoundError:
+        return "CRITICAL ERROR: Could not find MASTER_PROMPT.txt"
 
-    return f"{base_prompt}\n\nUSER_PROFILE (ANONYMOUS):\n{json.dumps(state)}\n\nVERIFIED_DIRECTORY (TRUTH):\n{json.dumps(directory)}"
+    if is_admin:
+        admin_path = os.path.join(base_dir, 'ADMIN_PROMPT.txt')
+        try:
+            with open(admin_path, 'r', encoding='utf-8') as f:
+                admin_prompt = f.read().strip()
+                instruction += f"\n\n--- ADMIN MODE ACTIVATED ---\n{admin_prompt}"
+                context_label = "PROVIDER_RESOURCES (CURRENT DB STATE)"
+        except FileNotFoundError:
+            return "CRITICAL ERROR: Could not find ADMIN_PROMPT.txt"
+    else:
+        context_label = "VERIFIED_DIRECTORY (TRUTH)"
+
+    instruction += (
+        f"\n\nSTATE (JSON):\n{json.dumps(state)}\n\n"
+        f"{context_label}:\n{json.dumps(context_data)}"
+    )
+
+    return instruction
 
 
-def get_rhonda_response(client, user_message, state, directory):
-    system_instruction = build_system_instruction(state, directory)
+def get_rhonda_response(client, user_message, state, context_data, is_admin=False):
+    system_instruction = build_system_instruction(state, context_data, is_admin)
+
+    if "CRITICAL ERROR" in system_instruction:
+        return "System configuration error: Missing prompt files.", state, 500
 
     try:
         chat_session = client.chats.create(

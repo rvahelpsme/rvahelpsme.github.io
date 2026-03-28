@@ -3,5 +3,4 @@ flask-cors
 gunicorn
 google-genai
 supabase
-gspread
 python-dotenv

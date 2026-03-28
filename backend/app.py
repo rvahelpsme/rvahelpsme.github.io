@@ -13,6 +13,7 @@ from src.chat import get_rhonda_response
 load_dotenv()
 
 app = Flask(__name__)
+# Restrict CORS in production if possible, but keeping open for the hackathon sprint
 CORS(app)
 
 supabase_url = os.environ.get("SUPABASE_URL")
@@ -33,7 +34,7 @@ else:
 
 @app.route('/')
 def index():
-    return "Rhonda Backend V3 is live. Secure Passport routing active."
+    return "Rhonda Backend V4 is live. 3-Word Resident and 4-Word Admin routing active."
 
 
 @app.route('/api/passport/create', methods=['POST'])
@@ -41,7 +42,7 @@ def create_passport():
     max_attempts = 5
 
     for _ in range(max_attempts):
-        plain_phrase = generate_passphrase()
+        plain_phrase = generate_passphrase(num_words=3)  # Explicitly 3 words for residents
 
         if not is_passphrase_in_use(supabase, plain_phrase, pepper):
             hashed_phrase = get_passphrase_hash(plain_phrase, pepper)
@@ -78,29 +79,43 @@ def access_passport():
     data = request.json
     raw_phrase = data.get('passphrase', '')
 
-    clean_phrase = extract_passphrase(raw_phrase)
+    # FIX: Unpack the tuple correctly
+    clean_phrase, word_count = extract_passphrase(raw_phrase)
+
     if not clean_phrase:
         return jsonify({"error": "Valid passphrase is required"}), 400
 
     hashed_phrase = get_passphrase_hash(clean_phrase, pepper)
-    response = supabase.table('passports').select('*').eq('passphrase_hash', hashed_phrase).execute()
+
+    # Check which table to query based on word count
+    table_name = 'providers' if word_count == 4 else 'passports'
+    response = supabase.table(table_name).select('*').eq('passphrase_hash', hashed_phrase).execute()
 
     if not response.data:
-        return jsonify({"error": "Passport not found or invalid passphrase."}), 404
+        return jsonify({"error": "Credential not found or invalid passphrase."}), 404
 
-    passport_data = response.data[0]
+    record_data = response.data[0]
 
     try:
-        supabase.table('passports').update({
-            "last_accessed_at": datetime.now(timezone.utc).isoformat()
+        supabase.table(table_name).update({
+            "last_accessed": datetime.now(timezone.utc).isoformat()
         }).eq('passphrase_hash', hashed_phrase).execute()
     except Exception as e:
         print(f"Warning: Non-fatal error updating access timestamp: {e}")
 
-    return jsonify({
-        "status": "success",
-        "state_json": passport_data['state_json']
-    }), 200
+    # Return the appropriate payload
+    if word_count == 4:
+        return jsonify({
+            "status": "success",
+            "role": "admin",
+            "provider_hash": hashed_phrase
+        }), 200
+    else:
+        return jsonify({
+            "status": "success",
+            "role": "resident",
+            "state_json": record_data['state_json']
+        }), 200
 
 
 @app.route('/chat', methods=['POST'])
@@ -110,44 +125,112 @@ def chat():
 
     data = request.json
     user_message = data.get('message', '').strip()
-    raw_phrase = data.get('passphrase', '')
+    current_hash = data.get('session_hash')  # Hidden frontend state
 
-    clean_phrase = extract_passphrase(raw_phrase)
-    if not user_message or not clean_phrase:
-        return jsonify({"error": "Message and valid Passphrase required"}), 400
+    if not user_message:
+        return jsonify({"error": "Message required"}), 400
 
-    hashed_phrase = get_passphrase_hash(clean_phrase, pepper)
-    passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash', hashed_phrase).execute()
+    # 1. Scan the message for a new passphrase
+    clean_phrase, word_count = extract_passphrase(user_message)
 
-    if not passport_res.data:
-        return jsonify({"error": "Passport not found."}), 404
+    is_admin = False
+    active_hash = current_hash
+    state = {}
+    new_phrase_generated = None
 
-    state = passport_res.data[0]['state_json']
+    # 2. If the user typed a phrase in chat, it overrides their current session
+    if clean_phrase:
+        active_hash = get_passphrase_hash(clean_phrase, pepper)
+        if word_count == 4:
+            is_admin = True
+            provider_res = supabase.table('providers').select('*').eq('passphrase_hash', active_hash).execute()
+            if not provider_res.data:
+                return jsonify({"error": "Admin credentials not found."}), 404
+            resources_res = supabase.table('resources').select('*').eq('provider_hash', active_hash).execute()
+            state = {"managed_resources": resources_res.data}
+        elif word_count == 3:
+            passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash', active_hash).execute()
+            if not passport_res.data:
+                return jsonify({"error": "Passport not found."}), 404
+            state = passport_res.data[0]['state_json']
 
-    directory = get_verified_directory()
-    if not directory:
-        return jsonify({
-            "response": "I'm having trouble connecting to my resource list. Please call 2-1-1 for immediate assistance.",
-            "status": "fallback"
-        })
+    # 3. If no phrase in chat, check for an existing session hash
+    elif current_hash:
+        # Check if it's a provider session first
+        provider_res = supabase.table('providers').select('*').eq('passphrase_hash', current_hash).execute()
+        if provider_res.data:
+            is_admin = True
+            resources_res = supabase.table('resources').select('*').eq('provider_hash', current_hash).execute()
+            state = {"managed_resources": resources_res.data}
+        else:
+            passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash',
+                                                                               current_hash).execute()
+            if not passport_res.data:
+                # Session is invalid or deleted, clear it out
+                active_hash = None
+            else:
+                state = passport_res.data[0]['state_json']
 
-    reply, new_state, status_code = get_rhonda_response(ai_client, user_message, state, directory)
+    # 4. If completely anonymous (no phrase in chat, no active session), create one
+    if not active_hash and not is_admin:
+        new_phrase_generated = generate_passphrase(num_words=3)
+        active_hash = get_passphrase_hash(new_phrase_generated, pepper)
+        state = {
+            "routing_preferences": {"needs_family_capacity": False, "needs_no_papers_intake": False},
+            "active_intents": {},
+            "language": "en",
+            "intake_prep": {}
+        }
+        supabase.table('passports').insert({
+            "passphrase_hash": active_hash,
+            "state_json": state
+        }).execute()
+
+    # 5. Fetch directory and talk to Rhonda
+    directory = [] if is_admin else get_verified_directory()
+
+    # --- AI CONTEXT INTERCEPT ---
+    # Tell Rhonda what those random words mean so she doesn't get confused
+    llm_message = user_message
+    if clean_phrase:
+        llm_message = (
+            f"[System Note: The user just successfully authenticated using the secure phrase '{clean_phrase}'. "
+            f"Their saved state is loaded. If their message below is ONLY the phrase, warmly welcome them back. "
+            f"Otherwise, answer their question normally.]\n\nUser: {user_message}"
+        )
+    # ----------------------------
+
+    reply, new_state, status_code = get_rhonda_response(
+        ai_client,
+        llm_message,  # Pass the intercepted message, not the raw user_message
+        state,
+        directory,
+        is_admin=is_admin
+    )
 
     if status_code != 200:
         return jsonify({"error": reply}), status_code
 
-    try:
-        supabase.table('passports').update({
-            "state_json": new_state,
-            "last_accessed_at": datetime.now(timezone.utc).isoformat()
-        }).eq('passphrase_hash', hashed_phrase).execute()
-    except Exception as e:
-        pass
+    # 6. Save state if it's a resident
+    if not is_admin:
+        try:
+            supabase.table('passports').update({
+                "state_json": new_state,
+                "last_accessed": datetime.now(timezone.utc).isoformat()
+            }).eq('passphrase_hash', active_hash).execute()
+        except Exception:
+            pass
 
-    return jsonify({
+    response_payload = {
         "response": reply,
-        "status": "success"
-    })
+        "status": "success",
+        "session_hash": active_hash
+    }
+
+    if new_phrase_generated:
+        response_payload["new_passphrase"] = new_phrase_generated
+
+    return jsonify(response_payload)
 
 
 if __name__ == '__main__':
