@@ -1,4 +1,5 @@
 import os
+import threading
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from supabase import create_client
@@ -125,7 +126,7 @@ def chat():
 
     data = request.json
     user_message = data.get('message', '').strip()
-    current_hash = data.get('session_hash')  # Hidden frontend state
+    current_hash = data.get('session_hash')
 
     if not user_message:
         return jsonify({"error": "Message required"}), 400
@@ -156,7 +157,6 @@ def chat():
 
     # 3. If no phrase in chat, check for an existing session hash
     elif current_hash:
-        # Check if it's a provider session first
         provider_res = supabase.table('providers').select('*').eq('passphrase_hash', current_hash).execute()
         if provider_res.data:
             is_admin = True
@@ -166,18 +166,18 @@ def chat():
             passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash',
                                                                                current_hash).execute()
             if not passport_res.data:
-                # Session is invalid or deleted, clear it out
                 active_hash = None
             else:
                 state = passport_res.data[0]['state_json']
 
-    # 4. If completely anonymous (no phrase in chat, no active session), create one
+    # 4. If completely anonymous, create a new resident passport
     if not active_hash and not is_admin:
         new_phrase_generated = generate_passphrase(num_words=3)
         active_hash = get_passphrase_hash(new_phrase_generated, pepper)
         state = {
             "routing_preferences": {"needs_family_capacity": False, "needs_no_papers_intake": False},
             "active_intents": {},
+            "suggested_resources": [],
             "language": "en",
             "intake_prep": {}
         }
@@ -186,11 +186,9 @@ def chat():
             "state_json": state
         }).execute()
 
-    # 5. Fetch directory and talk to Rhonda
+    # 5. Fetch directory and build AI context
     directory = [] if is_admin else get_verified_directory()
 
-    # --- AI CONTEXT INTERCEPT ---
-    # Tell Rhonda what those random words mean so she doesn't get confused
     llm_message = user_message
     if clean_phrase:
         llm_message = (
@@ -198,11 +196,11 @@ def chat():
             f"Their saved state is loaded. If their message below is ONLY the phrase, warmly welcome them back. "
             f"Otherwise, answer their question normally.]\n\nUser: {user_message}"
         )
-    # ----------------------------
 
-    reply, new_state, status_code = get_rhonda_response(
+    # Unpack the 4 variables from the updated chat.py logic
+    reply, new_state, db_updates, status_code = get_rhonda_response(
         ai_client,
-        llm_message,  # Pass the intercepted message, not the raw user_message
+        llm_message,
         state,
         directory,
         is_admin=is_admin
@@ -211,16 +209,29 @@ def chat():
     if status_code != 200:
         return jsonify({"error": reply}), status_code
 
-    # 6. Save state if it's a resident
-    if not is_admin:
-        try:
-            supabase.table('passports').update({
-                "state_json": new_state,
-                "last_accessed": datetime.now(timezone.utc).isoformat()
-            }).eq('passphrase_hash', active_hash).execute()
-        except Exception:
-            pass
+    # 6. Execute Database Writes Asynchronously
+    def background_tasks():
+        if not is_admin:
+            try:
+                supabase.table('passports').update({
+                    "state_json": new_state,
+                    "last_accessed": datetime.now(timezone.utc).isoformat()
+                }).eq('passphrase_hash', active_hash).execute()
+            except Exception as e:
+                print(f"Background passport update failed: {e}")
 
+        if is_admin and db_updates:
+            for update in db_updates:
+                try:
+                    supabase.table('resources').update({
+                        update["column"]: update["new_value"]
+                    }).eq('id', update["resource_id"]).eq('provider_hash', active_hash).execute()
+                except Exception as e:
+                    print(f"Background resource update failed: {e}")
+
+    threading.Thread(target=background_tasks).start()
+
+    # 7. Return the response to the frontend
     response_payload = {
         "response": reply,
         "status": "success",
