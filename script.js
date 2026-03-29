@@ -109,7 +109,9 @@ const UI = {
         msg.className = 'message';
         if (isGreeting) msg.id = 'greeting-bubble';
 
-        msg.innerHTML = text.replace(/\n/g, '<br>');
+        // NEW: Proper Markdown Bolding and Line Breaks
+        let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        msg.innerHTML = formattedText;
 
         const actions = document.createElement('div');
         actions.className = 'actions';
@@ -129,7 +131,7 @@ const UI = {
 
     updateLocalizedUI(translations) {
         const greetingMsg = document.getElementById('greeting-bubble');
-        if (greetingMsg) {
+        if (greetingMsg && translations.greeting) {
             greetingMsg.innerHTML = translations.greeting.replace(/\n/g, '<br>');
         }
 
@@ -228,7 +230,6 @@ const API = {
             UI.showTyping();
         }
 
-        // SILENT MORPH: No spammy text messages, just gracefully reveal the passport on first organic engagement
         if (!isHidden && !isSignal) {
             STATE.dynamicCount++;
             if (STATE.dynamicCount === 1 && !STATE.hasRevealedPassport && STATE.secretPassphrase) {
@@ -263,7 +264,6 @@ const API = {
                     UI.appendRhondaMessage(data.response, STATE.lang, true);
                     UI.renderIntentGrid(data.ui_translations?.button_labels);
                 } else {
-                    // DO NOT DELETE THE GRID. Let users always have access to the buttons.
                     UI.appendRhondaMessage(data.response, STATE.lang);
                 }
             }
@@ -292,9 +292,12 @@ if (recognition) {
     recognition.addEventListener('error', MicController.handleEnd);
 }
 
+// NEW: Passport Generation Logic
 DOM.header.addEventListener('click', async () => {
     if (!DOM.header.classList.contains('passphrase-mode')) return;
     DOM.header.classList.remove('glow');
+
+    UI.showTyping(); // Triggers the bouncing dots while it loads
 
     try {
         const res = await fetch(`${CONFIG.backendUrl}/summary`, {
@@ -302,22 +305,47 @@ DOM.header.addEventListener('click', async () => {
             body: JSON.stringify({ session_hash: STATE.sessionHash, lang: STATE.lang })
         });
         const data = await res.json();
+
+        UI.hideTyping(); // Hides dots when complete
+
         if (res.ok && data.status === 'success') {
+
+            // Render English only if language is English, else split screen
+            let columnsHtml = '';
+            if (STATE.lang === 'en' || !data.translated) {
+                columnsHtml = `<div style="flex:1;">${data.english}</div>`;
+            } else {
+                columnsHtml = `
+                    <div style="flex:1; border-right:1px solid var(--pi-user-bubble); padding-right:15px;">${data.english}</div>
+                    <div style="flex:1;" dir="auto">${data.translated}</div>
+                `;
+            }
+
             const cardHtml = `
                 <div class="summary-card" style="background:#FFF; border:2px solid var(--pi-send-active); border-radius:16px; padding:20px; margin-top:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                     <div style="color:var(--pi-send-active); font-weight:800; margin-bottom:15px; text-transform:uppercase; font-size:13px; letter-spacing: 1px;">Provider Handoff Summary</div>
-                    <div style="display:flex; flex-direction: column; gap:15px; font-size: 15px; line-height: 1.5;">
-                        <div style="border-bottom:1px solid var(--pi-user-bubble); padding-bottom:15px;">${data.english}</div>
-                        <div dir="auto">${data.translated}</div>
+                    <div style="display:flex; gap:15px; font-size: 15px; line-height: 1.5;">
+                        ${columnsHtml}
                     </div>
                 </div>`;
+
             const row = document.createElement('div');
             row.className = 'message-row rhonda';
             row.innerHTML = cardHtml;
             DOM.chat.appendChild(row);
             UI.scrollToBottom();
+
+            // Append the hardcoded explanation message immediately after
+            if (data.explanation) {
+                setTimeout(() => {
+                    UI.appendRhondaMessage(data.explanation, STATE.lang);
+                }, 500);
+            }
         }
-    } catch (err) { UI.appendRhondaMessage("Failed to generate summary.", STATE.lang); }
+    } catch (err) {
+        UI.hideTyping();
+        UI.appendRhondaMessage("Failed to generate summary.", STATE.lang);
+    }
 });
 
 UI.startRotation();

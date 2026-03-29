@@ -8,13 +8,13 @@ STRICT CONSTRAINTS & FORMATTING:
 
 [Organization Name] helps with [Brief 1-sentence summary].
 
-Phone: **[Phone Number]**
+**Phone:** [Number]
 
-Address: **[Address]**
+**Address:** [Address]
 
-Next Step: [One short, direct instruction on what the user should do right now].
+**Next Step:** [One short, direct instruction on what the user should do right now].
 
-4. NO BULLETS: Never use bullet points (- or *).
+4. NO BULLETS: Never use markdown bullet points (- or *).
 5. STATE: Add the suggested resource to the resources_provided dictionary with status "suggested". Update any intake details.
 6. FALLBACK: If no resources exist in the data, provide the 211 fallback. If the need is completely unclear, ask one short question.
 

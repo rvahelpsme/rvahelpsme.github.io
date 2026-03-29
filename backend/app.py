@@ -42,6 +42,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 gemini_key = os.environ.get("GEMINI_API_KEY")
 ai_client = genai.Client(api_key=gemini_key) if gemini_key else None
 
+
 def generate_tts_audio(text: str, lang_code: str = 'en'):
     try:
         client = texttospeech.TextToSpeechClient()
@@ -65,15 +66,18 @@ def generate_tts_audio(text: str, lang_code: str = 'en'):
         print(f"Google TTS Error: {e}")
         return None
 
+
 def _format_suggested_resources(pruned_directory: list, ai_reply: str, state: dict) -> None:
     for resource in pruned_directory:
         org_name = resource.get('org_name') or ''
         service_name = resource.get('service_name') or ''
         dict_key = f"{service_name} (via {org_name})" if org_name else service_name
-        if (org_name and org_name.lower() in ai_reply.lower()) or (service_name and service_name.lower() in ai_reply.lower()):
+        if (org_name and org_name.lower() in ai_reply.lower()) or (
+                service_name and service_name.lower() in ai_reply.lower()):
             if "resources_provided" not in state: state["resources_provided"] = {}
             raw_phone = resource.get('phone_number')
             state["resources_provided"][dict_key] = {"phone": raw_phone if raw_phone else "211", "status": "suggested"}
+
 
 @app.route('/tts', methods=['POST'])
 def get_audio():
@@ -85,6 +89,7 @@ def get_audio():
     if audio_b64: return jsonify({"status": "success", "audio_base64": audio_b64}), 200
     return jsonify({"error": "Failed to generate audio"}), 500
 
+
 @app.route('/summary', methods=['POST'])
 def generate_summary():
     data = request.json
@@ -93,9 +98,22 @@ def generate_summary():
     if not session_hash: return jsonify({"error": "Session hash required"}), 400
     state, _ = get_resident_state(supabase, hash_only=session_hash)
     if not state: return jsonify({"error": "Passport not found"}), 404
+
     eng_summary, trans_summary, status = execute_summary_prompt(ai_client, state, target_lang)
-    if status == 200: return jsonify({"status": "success", "english": eng_summary, "translated": trans_summary}), 200
+
+    # NEW: Fetch the hardcoded explanation in the correct language
+    explanation = RESPONSES["summary_explanation"].get(target_lang, RESPONSES["summary_explanation"]["en"])
+
+    if status == 200:
+        return jsonify({
+            "status": "success",
+            "english": eng_summary,
+            "translated": trans_summary,
+            "explanation": explanation
+        }), 200
+
     return jsonify({"error": "Summary generation failed"}), 500
+
 
 @app.route('/chat', methods=['POST'])
 def chat():
@@ -131,8 +149,10 @@ def chat():
 
         if session_hash:
             state, active_hash = get_resident_state(supabase, hash_only=session_hash)
-            if state: lang_code = state.get("language", "en")
-            else: state, active_hash, new_phrase = create_new_passport(supabase, pepper); is_new_user = True
+            if state:
+                lang_code = state.get("language", "en")
+            else:
+                state, active_hash, new_phrase = create_new_passport(supabase, pepper); is_new_user = True
         else:
             state, active_hash, new_phrase = create_new_passport(supabase, pepper)
             is_new_user = True
@@ -151,24 +171,28 @@ def chat():
         raw_words = re.sub(r'[^A-Za-z\s]', ' ', user_message).split()
         upper_sequence = sum(1 for w in raw_words if w.isupper() and len(w) > 1)
         if upper_sequence >= 3:
-            return jsonify({"response": "I couldn't find a record for that specific phrase.", "status": "not_found"}), 200
+            return jsonify(
+                {"response": "I couldn't find a record for that specific phrase.", "status": "not_found"}), 200
 
     if word_count == 4:
         admin_state, provider_hash = get_admin_state(supabase, clean_phrase, pepper)
         if not admin_state: return jsonify({"error": "Admin credentials not found."}), 404
         reply, db_updates, status_code = execute_admin_prompt(ai_client, user_message, admin_state)
-        if db_updates: threading.Thread(target=save_admin_updates_async, args=(supabase, provider_hash, db_updates)).start()
+        if db_updates: threading.Thread(target=save_admin_updates_async,
+                                        args=(supabase, provider_hash, db_updates)).start()
         return jsonify({"response": reply, "status": "success", "session_hash": provider_hash}), status_code
 
     if word_count == 3:
         resident_state, passport_hash = get_resident_state(supabase, clean_phrase, pepper)
         if resident_state is None:
             failure_context = {"language": "en", "status": "passport_not_found"}
-            reply, _ = execute_welcome_prompt(ai_client, f"SYSTEM_NOTIFY: Passport '{clean_phrase}' not found.", failure_context, clean_phrase)
+            reply, _ = execute_welcome_prompt(ai_client, f"SYSTEM_NOTIFY: Passport '{clean_phrase}' not found.",
+                                              failure_context, clean_phrase)
             return jsonify({"response": reply, "status": "not_found"}), 200
         reply, status_code = execute_welcome_prompt(ai_client, user_message, resident_state, clean_phrase)
         return jsonify({
-            "response": reply, "status": "success", "session_hash": passport_hash, "language": resident_state.get("language", "en"),
+            "response": reply, "status": "success", "session_hash": passport_hash,
+            "language": resident_state.get("language", "en"),
             "ui_translations": get_ui_payload(resident_state.get("language", "en"))
         }), status_code
 
@@ -242,6 +266,7 @@ def chat():
     if is_new_user and new_phrase: response_payload["new_passphrase"] = new_phrase
 
     return jsonify(response_payload)
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))

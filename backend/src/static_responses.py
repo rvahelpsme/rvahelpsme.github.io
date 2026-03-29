@@ -1,5 +1,5 @@
 RESPONSES = {
-"button_labels": {
+    "button_labels": {
         "en": {"housing": "Housing", "food": "Food", "legal": "Legal", "health": "Health", "transit": "Transit", "education": "Education"},
         "es": {"housing": "Vivienda", "food": "Comida", "legal": "Legal", "health": "Salud", "transit": "Transporte", "education": "Educación"},
         "ar": {"housing": "الإسكان", "food": "الغذاء", "legal": "القانوني", "health": "الصحة", "transit": "النقل", "education": "التعليم"},
@@ -19,104 +19,74 @@ RESPONSES = {
         "ne": "नमस्ते, म रोन्डा हुँ। म तपाईंलाई रिचमण्डमा आवास, खाना, कानुनी सहायता, र थप कुराहरू फेला पार्न मद्दत गर्न सक्छु। तपाईंले साझा गर्नुभएको सबै कुरा पूर्ण रूपमा गोप्य छ। तल एउटा विषय छान्नुहोस् वा मलाई तपाईंलाई के चाहिन्छ भन्नुहोस्।",
         "my": "မင်္ဂလာပါ၊ ကျွန်မကတော့ ရွန်ဒါပါ။ ရစ်ချ်မွန်မှာ အိမ်ရာ၊ အစားအသောက်၊ ဥပဒေရေးရာ အကူအညီနဲ့ တခြားအရာတွေကို ရှာဖွေဖို့ ကျွန်မ ကူညီပေးနိုင်ပါတယ်။ သင်မျှဝေတဲ့ အရာအားလုံးဟာ လုံးဝ အမည်မသိဖြစ်ပါတယ်။ အောက်က ခေါင်းစဉ်တစ်ခုကို ရွေးချယ်ပါ ဒါမှမဟုတ် သင်ဘာလိုအပ်လဲဆိုတာ ပြောပြပါ။"
     },
-        "privacy": {
-            "en": "I never store Personally Identifiable Information. If you accidentally share anything like a phone number or address with me, it is [REDACTED] before it even leaves your browser. Your questions are immediately discarded after I read them. I leave no cookies on your machine and cannot view your browser history or location.",
-            "es": "Nunca guardo información personal que pueda identificarte. Si por accidente compartes algo como un número de teléfono o dirección conmigo, se oculta antes de que salga de tu navegador. Tus preguntas se eliminan inmediatamente después de que las leo. No dejo cookies en tu dispositivo y no puedo ver tu historial de navegación ni tu ubicación.",
-            "ar": "أنا لا أقوم أبداً بتخزين معلومات شخصية تكشف عن هويتك. إذا قمت عن طريق الخطأ بمشاركة أي شيء معي مثل رقم هاتف أو عنوان، فسيتم إخفاؤه قبل أن يغادر متصفحك. يتم التخلص من أسئلتك فوراً بعد قراءتها. أنا لا أترك أي ملفات تعريف ارتباط على جهازك ولا يمكنني عرض سجل التصفح أو موقعك.",
-            "fa": "من هرگز اطلاعات هویتی شخصی را ذخیره نمی کنم. اگر به طور تصادفی چیزی مانند شماره تلفن یا آدرس را با من به اشتراک بگذارید، قبل از اینکه مرورگر شما را ترک کند، پنهان می شود. سوالات شما بلافاصله پس از خواندن من دور ریخته می شوند. من هیچ کوکی روی دستگاه شما باقی نمی گذارم و نمی توانم تاریخچه مرورگر یا موقعیت مکانی شما را ببینم.",
-            "ps": "زه هیڅکله داسې شخصي معلومات نه ساتم چې ستاسو هویت ښکاره کړي. که تاسو په ناڅاپي ډول له ما سره د تلیفون شمیره یا پته شریکه کړئ، نو دا ستاسو د براوزر پریښودو دمخه پټیږي. ستاسو پوښتنې زما د لوستلو وروسته سمدلاسه له مینځه وړل کیږي. زه ستاسو په ماشین کې هیڅ کوکیز نه پریږدم او ستاسو د براوزر تاریخچه یا موقعیت نشم لیدلی.",
-            "pt": "Eu nunca guardo informações de identificação pessoal. Se você compartilhar acidentalmente algo como um número de telefone ou endereço comigo, ele é ocultado antes mesmo de sair do seu navegador. Suas perguntas são descartadas imediatamente após eu lê-las. Não deixo cookies na sua máquina e não consigo ver o seu histórico de navegação ou localização.",
-            "ne": "म कहिल्यै पनि तपाईंको व्यक्तिगत पहिचान खुल्ने जानकारी भण्डारण गर्दिनँ। यदि तपाईंले झुक्किएर मलाई फोन नम्बर वा ठेगाना जस्तो कुनै कुरा साझा गर्नुभयो भने, त्यो तपाईंको ब्राउजर छोड्नु अघि नै लुकाइन्छ। मैले पढेपछि तपाईंको प्रश्नहरू तुरुन्तै खारेज गरिन्छ। म तपाईंको मेसिनमा कुनै कुकीहरू छोड्दिनँ र तपाईंको ब्राउजर इतिहास वा स्थान हेर्न सक्दिनँ।",
-            "my": "သင့်ကို မည်သူမည်ဝါဖြစ်ကြောင်း ခွဲခြားသိရှိနိုင်စေမယ့် ကိုယ်ရေးအချက်အလက်များကို ကျွန်မ ဘယ်တော့မှ မသိမ်းဆည်းထားပါ။ အကယ်၍ ဖုန်းနံပါတ် သို့မဟုတ် လိပ်စာကဲ့သို့သော အရာတစ်ခုခုကို သင့်ဘရောက်ဇာကနေ မထွက်ခွာခင်မှာ ဖုံးကွယ်ထားမှာ ဖြစ်ပါတယ်။ သင့်မေးခွန်းတွေကို ဖတ်ပြီးတာနဲ့ ချက်ချင်း ဖျက်ပစ်ပါတယ်။ သင့်စက်ပေါ်မှာ ကွတ်ကီး (cookies) တွေကို မချန်ထားခဲ့သလို သင့်ဘရောက်ဇာ ရာဇဝင် သို့မဟုတ် တည်နေရာကိုလည်း ကြည့်ရှုလို့ မရနိုင်ပါ။"
-        },
-        "passport_info": {
-            "en": "If you ever lose this connection but want to continue where we left off, just type those three words at the top of the screen to me. If you forget them, we'll have to start over. And remember, I never store Personally Identifiable Information or any of your messages.",
-            "es": "Si alguna vez pierdes esta conexión pero quieres continuar donde lo dejamos, solo escríbeme esas tres palabras en la parte superior de la pantalla. Si las olvidas, tendremos que empezar de nuevo. Y recuerda, nunca guardo información personal que pueda identificarte ni ninguno de tus mensajes.",
-            "ar": "إذا فقدت هذا الاتصال في أي وقت ولكنك أردت المتابعة من حيث توقفنا، فقط اكتب لي تلك الكلمات الثلاث الموجودة في أعلى الشاشة. إذا نسيتها، فسنضطر إلى البدء من جديد. وتذكر، أنا لا أقوم أبداً بتخزين معلومات شخصية تكشف عن هويتك أو أي من رسائلك.",
-            "fa": "اگر زمانی این اتصال را از دست دادید اما خواستید از جایی که متوقف شدیم ادامه دهیم، فقط آن سه کلمه در بالای صفحه را برای من تایپ کنید. اگر آنها را فراموش کنید، باید از نو شروع کنیم. و به یاد داشته باشید، من هرگز اطلاعات هویتی شخصی یا هیچ یک از پیام های شما را ذخیره نمی کنم.",
-            "ps": "که تاسو کله هم دا اړیکه له لاسه ورکړئ مګر غواړئ هلته دوام ورکړئ چیرې چې موږ پریښود، یوازې د سکرین په پورتنۍ برخه کې هغه درې کلمې ما ته ولیکئ. که تاسو هغه هیر کړئ، موږ باید بیا پیل وکړو. او په یاد ولرئ، زه هیڅکله داسې شخصي معلومات چې ستاسو هویت ښکاره کړي یا ستاسو کوم پیغامونه نه ساتم.",
-            "pt": "Se você perder esta conexão, mas quiser continuar de onde paramos, basta digitar aquelas três palavras na parte superior da tela para mim. Se você esquecê-las, teremos que começar de novo. E lembre-se, eu nunca armazeno informações de identificação pessoal ou qualquer uma de suas mensagens.",
-            "ne": "यदि तपाईंले कहिल्यै यो जडान गुमाउनुभयो तर हामीले जहाँ छोडेका थियौं त्यहीँबाट जारी राख्न चाहनुहुन्छ भने, स्क्रिनको शीर्षमा रहेका ती तीन शब्दहरू मलाई टाइप गर्नुहोस्। यदि तपाईंले तिनीहरूलाई बिर्सनुभयो भने, हामीले फेरि सुरु गर्नुपर्नेछ। र याद राख्नुहोस्, म कहिल्यै पनि तपाईंको व्यक्तिगत पहिचान खुल्ने जानकारी वा तपाईंको कुनै पनि सन्देशहरू भण्डारण गर्दिनँ।",
-            "my": "အကယ်၍ သင်ဟာ ဒီအဆက်အသွယ် ပြတ်တောက်သွားပြီး ကျွန်မတို့ ရပ်နားခဲ့တဲ့ နေရာကနေ ပြန်စချင်တယ်ဆိုရင် စခရင်ရဲ့ အပေါ်ဘက်က စကားလုံး သုံးလုံးကို ကျွန်မဆီ ရိုက်ထည့်ပေးပါ။ အကယ်၍ သင်မေ့သွားရင်တော့ ကျွန်မတို့ အစကနေ ပြန်စရပါလိမ့်မယ်။ ပြီးတော့ မှတ်ထားပါ၊ သင့်ကို မည်သူမည်ဝါဖြစ်ကြောင်း ခွဲခြားသိရှိနိုင်စေမယ့် ကိုယ်ရေးအချက်အလက်တွေ ဒါမှမဟုတ် သင့်ရဲ့ စာတိုတွေကို ကျွန်မ ဘယ်တော့မှ မသိမ်းဆည်းထားပါဘူး။"
-        },
-        "summary_hint": {
-            "en": "You've shared a lot with me. If you ever want me to explain your needs to any of the providers I've mentioned, just tap your passphrase at the top and I'll provide a summary they can use to prevent you from having to repeat yourself.",
-            "es": "Has compartido mucho conmigo. Si alguna vez quieres que le explique tus necesidades a cualquiera de los proveedores que he mencionado, solo toca tu frase de contraseña en la parte superior y proporcionaré un resumen que pueden usar para evitar que tengas que repetirlo todo.",
-            "ar": "لقد شاركت الكثير معي. إذا أردت في أي وقت أن أشرح احتياجاتك لأي من مقدمي الخدمات الذين ذكرتهم، فما عليك سوى النقر على عبارة المرور الخاصة بك في الأعلى وسأقدم ملخصاً يمكنهم استخدامه لتجنب اضطرارك إلى تكرار ما قلته.",
-            "fa": "شما چیزهای زیادی را با من در میان گذاشته اید. اگر زمانی خواستید نیازهای شما را برای هر یک از ارائه دهندگانی که ذکر کردم توضیح دهم، فقط روی عبارت عبور خود در بالا ضربه بزنید و من خلاصه ای ارائه می دهم که آنها می توانند استفاده کنند تا شما مجبور نشوید حرف هایتان را تکرار کنید.",
-            "ps": "تاسو له ما سره ډیر څه شریک کړل. که تاسو کله هم غواړئ چې زه ستاسو اړتیاوې کوم وړاندیز کونکو ته تشریح کړم چې ما یادونه کړې، یوازې په پورتنۍ برخه کې خپل پټنوم ټایپ کړئ او زه به یوه لنډیز چمتو کړم چې دوی یې کارولی شي ترڅو تاسو مجبور نشئ خپلې خبرې تکرار کړئ.",
-            "pt": "Você compartilhou muito comigo. Se você quiser que eu explique suas necessidades a qualquer um dos provedores que mencionei, basta tocar na sua frase secreta na parte superior e fornecerei um resumo que eles podem usar para evitar que você tenha que se repetir.",
-            "ne": "तपाईंले मसँग धेरै कुरा साझा गर्नुभएको छ। यदि तपाईं मलाई मैले उल्लेख गरेका कुनै पनि सेवा प्रदायकहरूलाई तपाईंको आवश्यकताहरू व्याख्या गर्न चाहनुहुन्छ भने, शीर्षमा रहेको तपाईंको पासफ्रेजमा ट्याप गर्नुहोस् र म एउटा सारांश प्रदान गर्नेछु जुन उनीहरूले प्रयोग गर्न सक्छन् ताकि तपाईंले आफ्ना कुराहरू दोहोर्याइरहनु पर्दैन।",
-            "my": "သင်ဟာ ကျွန်မကို အများကြီး မျှဝေပေးခဲ့ပါတယ်။ ကျွန်မပြောခဲ့တဲ့ ဝန်ဆောင်မှုပေးသူတွေဆီ သင့်ရဲ့ လိုအပ်ချက်တွေကို ရှင်းပြပေးစေချင်ရင် အပေါ်ဘက်က သင့်ရဲ့ လျှို့ဝှက်စကားစု (passphrase) ကို နှိပ်လိုက်ပါ။ သင် ထပ်ခါတလဲလဲ ပြောနေစရာမလိုအောင် သူတို့အသုံးပြုနိုင်မယ့် အနှစ်ချုပ်တစ်ခုကို ကျွန်မ ပေးပို့ပေးပါမယ်။"
-        },
-        "about_me": {
-            "en": "I was programmed by two humans and one ancient laptop during a competition called 'Hack for RVA'. My creators have faced many of the struggles I aim to support. I'm named after Rhonda Sneed, founder of Blessing Warriors RVA. If you'd like to know more, visit https://github.com/rvahelpsme/rvahelpsme.github.io",
-            "es": "Fui programada por dos humanos y una computadora portátil antigua durante una competencia llamada 'Hack for RVA'. Mis creadores han enfrentado muchas de las dificultades que intento apoyar. Llevo el nombre de Rhonda Sneed, fundadora de Blessing Warriors RVA. Si deseas saber más, visita https://github.com/rvahelpsme/rvahelpsme.github.io",
-            "ar": "تمت برمجتي بواسطة شخصين وحاسوب محمول قديم خلال مسابقة تسمى 'Hack for RVA'. لقد واجه مبتكري العديد من الصعوبات التي أهدف إلى تقديم الدعم فيها. سُميت على اسم روندا سنيد، مؤسسة Blessing Warriors RVA. إذا كنت ترغب في معرفة المزيد، قم بزيارة https://github.com/rvahelpsme/rvahelpsme.github.io",
-            "fa": "من توسط دو انسان و یک لپ تاپ قدیمی در طول مسابقه ای به نام 'Hack for RVA' برنامه ریزی شدم. سازندگان من با بسیاری از مشکلاتی که قصد حمایت از آنها را دارم روبرو بوده اند. نام من از روی نام روندا اسنید، بنیانگذار Blessing Warriors RVA انتخاب شده است. اگر مایلید بیشتر بدانید، به https://github.com/rvahelpsme/rvahelpsme.github.io مراجعه کنید.",
-            "ps": "زه د دوه انسانانو او یوه زاړه لپ ټاپ لخوا د 'Hack for RVA' په نوم سیالۍ کې پروګرام شوې یم. زما جوړونکو د ډیری هغو ستونزو سره مخ شوي چې زه یې د ملاتړ کولو هدف لرم. زه د Blessing Warriors RVA بنسټ ایښودونکې، رونډا سنیډ په نوم نومول شوې یم. که تاسو غواړئ نور معلومات ترلاسه کړئ، مهرباني وکړئ https://github.com/rvahelpsme/rvahelpsme.github.io ته مراجعه وکړئ.",
-            "pt": "Fui programada por dois humanos e um laptop antigo durante uma competição chamada 'Hack for RVA'. Meus criadores enfrentaram muitas das dificuldades que procuro apoiar. Meu nome é uma homenagem a Rhonda Sneed, fundadora da Blessing Warriors RVA. Se você quiser saber mais, visite https://github.com/rvahelpsme/rvahelpsme.github.io",
-            "ne": "मलाई 'Hack for RVA' नामक प्रतियोगिताको क्रममा दुई मानिस र एउटा पुरानो ल्यापटपद्वारा प्रोग्राम गरिएको थियो। मेरा सिर्जनाकर्ताहरूले मैले समर्थन गर्ने लक्ष्य राखेका धेरै सङ्घर्षहरूको सामना गरेका छन्। मेरो नाम Blessing Warriors RVA की संस्थापक रोन्डा स्नीडको नामबाट राखिएको हो। यदि तपाईं थप जान्न चाहनुहुन्छ भने, https://github.com/rvahelpsme/rvahelpsme.github.io मा जानुहोस्",
-            "my": "ကျွန်မကို 'Hack for RVA' လို့ခေါ်တဲ့ ပြိုင်ပွဲတစ်ခုအတွင်းမှာ လူနှစ်ယောက်နဲ့ ရှေးဟောင်း လက်ပ်တော့ပ်တစ်လုံးက ပရိုဂရမ်ရေးဆွဲခဲ့တာပါ။ ကျွန်မကို ဖန်တီးခဲ့သူတွေဟာ ကျွန်မကူညီပေးချင်တဲ့ အခက်အခဲများစွာကို ရင်ဆိုင်ခဲ့ရဖူးသူတွေ ဖြစ်ပါတယ်။ ကျွန်မရဲ့ နာမည်ကို Blessing Warriors RVA ရဲ့ တည်ထောင်သူ Rhonda Sneed ကို အစွဲပြုပြီး ပေးထားတာပါ။ အသေးစိတ် သိချင်ရင် https://github.com/rvahelpsme/rvahelpsme.github.io ကို ဝင်ရောက်ကြည့်ရှုပါ။"
-        },
-        "housing_prompt": {
-            "en": "I can help you find housing, apply for rent relief, or understand your rights as a tenant. What do you need help with regarding housing?",
-            "es": "Puedo ayudarte a encontrar vivienda, solicitar ayuda para el alquiler o entender tus derechos como inquilino. ¿En qué necesitas ayuda con respecto a la vivienda?",
-            "ar": "يمكنني مساعدتك في العثور على سكن، أو التقدم بطلب للحصول على مساعدة في دفع الإيجار، أو فهم حقوقك كمستأجر. ما الذي تحتاج إلى المساعدة فيه بخصوص السكن؟",
-            "fa": "من می توانم به شما در یافتن مسکن، درخواست کمک هزینه اجاره، یا درک حقوق خود به عنوان مستاجر کمک کنم. در رابطه با مسکن به چه کمکی نیاز دارید؟",
-            "ps": "زه کولی شم تاسو سره د کور په موندلو کې مرسته وکړم، د کرایې مرستې لپاره غوښتنه وکړم، یا د کرایه کونکي په توګه ستاسو په حقونو پوه شم. تاسو د کور په اړه څه مرستې ته اړتیا لرئ؟",
-            "pt": "Posso ajudá-lo a encontrar moradia, solicitar auxílio-aluguel ou entender seus direitos como inquilino. Com o que você precisa de ajuda em relação à moradia?",
-            "ne": "म तपाईंलाई आवास खोज्न, भाडा राहतको लागि आवेदन दिन, वा भाडामा बस्ने व्यक्तिको रूपमा तपाईंको अधिकारहरू बुझ्न मद्दत गर्न सक्छु। तपाईंलाई आवासको सम्बन्धमा के मद्दत चाहिन्छ?",
-            "my": "ကျွန်မအနေနဲ့ သင့်ကို အိမ်ရာရှာဖွေဖို့၊ အိမ်လခသက်သာခွင့် လျှောက်ထားဖို့ ဒါမှမဟုတ် အိမ်ငှားတစ်ယောက်အနေနဲ့ သင့်ရဲ့ အခွင့်အရေးတွေကို နားလည်စေဖို့ ကူညီပေးနိုင်ပါတယ်။ အိမ်ရာနဲ့ ပတ်သက်ပြီး ဘာကူညီပေးရမလဲရှင်။"
-        },
-        "food_prompt": {
-            "en": "I can locate nearby food pantries, explain how to apply for nutrition assistance benefits, or find free community meals. How can I help you with food today?",
-            "es": "Puedo localizar bancos de alimentos cercanos, explicarte cómo solicitar beneficios de asistencia nutricional o encontrar comidas comunitarias gratuitas. ¿Cómo puedo ayudarte con la comida hoy?",
-            "ar": "يمكنني تحديد مواقع بنوك الطعام القريبة، أو شرح كيفية التقدم للحصول على مزايا المساعدة الغذائية، أو العثور على وجبات مجتمعية مجانية. كيف يمكنني مساعدتك بخصوص الطعام اليوم؟",
-            "fa": "من می توانم انبارهای غذای مجاور را پیدا کنم، نحوه درخواست برای مزایای کمک تغذیه ای را توضیح دهم، یا وعده های غذایی رایگان در جامعه را پیدا کنم. امروز چگونه می توانم در زمینه غذا به شما کمک کنم؟",
-            "ps": "زه کولی شم نږدې د خواړو بانکونه ومومم، تشریح کړم چې څنګه د تغذیې مرستې ګټو لپاره غوښتنه وکړم، یا د ټولنې وړیا خواړه ومومم. زه نن ورځ د خواړو په برخه کې ستاسو سره څنګه مرسته کولی شم؟",
-            "pt": "Posso localizar bancos de alimentos próximos, explicar como solicitar benefícios de assistência nutricional ou encontrar refeições comunitárias gratuitas. Como posso ajudá-lo com comida hoje?",
-            "ne": "म नजिकैका फूड प्यान्ट्रीहरू फेला पार्न सक्छु, पोषण सहायता लाभहरूको लागि कसरी आवेदन दिने भनेर व्याख्या गर्न सक्छु, वा नि:शुल्क सामुदायिक खानाहरू फेला पार्न सक्छु। म तपाईंलाई आज खानाको बारेमा कसरी मद्दत गर्न सक्छु?",
-            "my": "အနီးအနားက အစားအသောက်လှူဒါန်းတဲ့ နေရာတွေကို ရှာဖွေပေးတာ၊ အာဟာရ အထောက်အပံ့ အကျိုးခံစားခွင့်တွေကို ဘယ်လိုလျှောက်ထားရမလဲဆိုတာ ရှင်းပြပေးတာ၊ ဒါမှမဟုတ် အခမဲ့ ရပ်ကွက်တွင်း အစားအသောက် အစီအစဉ်တွေကို ရှာဖွေပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဒီနေ့ အစားအသောက်နဲ့ ပတ်သက်ပြီး ဘယ်လို ကူညီပေးရမလဲရှင်။"
-        },
-        "legal_prompt": {
-            "en": "I can connect you with local legal aid for evictions, help with immigration documentation, or find advocacy services. What legal help are you looking for?",
-            "es": "Puedo conectarte con asistencia legal local para desalojos, ayuda con documentación de inmigración o encontrar servicios de defensa. ¿Qué ayuda legal estás buscando?",
-            "ar": "يمكنني توصيلك بالمساعدة القانونية المحلية في حالات الإخلاء، أو المساعدة في وثائق الهجرة، أو العثور على خدمات المناصرة. ما هي المساعدة القانونية التي تبحث عنها؟",
-            "fa": "من می توانم شما را با کمک های حقوقی محلی برای تخلیه ملک، کمک در مورد اسناد مهاجرت، یا یافتن خدمات وکالت حقوقی مرتبط کنم. به دنبال چه نوع کمک حقوقی هستید؟",
-            "ps": "زه کولی شم تاسو د ایستلو لپاره سیمه ایز قانوني مرستې سره وصل کړم، د کډوالۍ اسنادو کې مرسته وکړم، یا د مدافع وکیل خدمات ومومم. تاسو کوم قانوني مرستې په لټه کې یاست؟",
-            "pt": "Posso conectá-lo com assistência legal local para despejos, ajudar com documentação de imigração ou encontrar serviços de defesa. Qual ajuda legal você está procurando?",
-            "ne": "म तपाईंलाई निष्कासनको लागि स्थानीय कानुनी सहायतासँग जोड्न सक्छु, अध्यागमन कागजातमा मद्दत गर्न सक्छु, वा वकालत सेवाहरू फेला पार्न सक्छु। तपाईं कस्तो कानुनी मद्दत खोज्दै हुनुहुन्छ?",
-            "my": "အိမ်ပေါ်မှ နှင်ချခံရမှုတွေအတွက် ဒေသတွင်း ဥပဒေရေးရာ အကူအညီတွေနဲ့ ချိတ်ဆက်ပေးတာ၊ လူဝင်မှုကြီးကြပ်ရေး စာရွက်စာတမ်းတွေအတွက် ကူညီပေးတာ၊ ဒါမှမဟုတ် ရှေ့နေဝန်ဆောင်မှုတွေကို ရှာဖွေပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဘယ်လို ဥပဒေရေးရာ အကူအညီမျိုးကို ရှာဖွေနေပါသလဲရှင်။"
-        },
-        "healthcare_prompt": {
-            "en": "I can help you find free and low-cost clinics, mental health support, or explain how to sign up for health insurance like Medicaid. What health services do you need?",
-            "es": "Puedo ayudarte a encontrar clínicas gratuitas y de bajo costo, apoyo de salud mental o explicarte cómo inscribirte en un seguro médico como Medicaid. ¿Qué servicios de salud necesitas?",
-            "ar": "يمكنني مساعدتك في العثور على عيادات مجانية ومنخفضة التكلفة، أو دعم الصحة النفسية، أو شرح كيفية التسجيل في التأمين الصحي مثل Medicaid. ما هي الخدمات الصحية التي تحتاجها؟",
-            "fa": "من می توانم به شما در یافتن کلینیک های رایگان و کم هزینه، پشتیبانی بهداشت روان کمک کنم، یا نحوه ثبت نام برای بیمه درمانی مانند Medicaid را توضیح دهم. به چه خدمات بهداشتی نیاز دارید؟",
-            "ps": "زه کولی شم تاسو سره د وړیا او ټیټ لګښت کلینیکونو، رواني روغتیا مالتړ موندلو کې مرسته وکړم، یا تشریح کړم چې د روغتیا بیمې لکه میډیکاډ لپاره څنګه نوم لیکنه وکړم. تاسو کوم روغتیایی خدماتو ته اړتیا لرئ؟",
-            "pt": "Posso ajudá-lo a encontrar clínicas gratuitas e de baixo custo, apoio à saúde mental ou explicar como se inscrever em um seguro de saúde como o Medicaid. De quais serviços de saúde você precisa?",
-            "ne": "म तपाईंलाई नि:शुल्क र कम लागतका क्लिनिकहरू, मानसिक स्वास्थ्य समर्थन फेला पार्न, वा मेडिकेड (Medicaid) जस्ता स्वास्थ्य बीमाको लागि कसरी साइन अप गर्ने भनेर व्याख्या गर्न मद्दत गर्न सक्छु। तपाईंलाई कस्तो स्वास्थ्य सेवाहरू चाहिन्छ?",
-            "my": "အခမဲ့နဲ့ ကုန်ကျစရိတ်သက်သာတဲ့ ဆေးခန်းတွေ၊ စိတ်ကျန်းမာရေး အထောက်အပံ့တွေကို ရှာဖွေပေးတာ ဒါမှမဟုတ် Medicaid လိုမျိုး ကျန်းမာရေးအာမခံကို ဘယ်လို စာရင်းသွင်းရမလဲဆိုတာ ရှင်းပြပေးတာတွေကို ကူညီပေးနိုင်ပါတယ်။ ဘယ်လို ကျန်းမာရေး ဝန်ဆောင်မှုတွေ လိုအပ်ပါသလဲရှင်။"
-        },
-        "transportation_prompt": {
-            "en": "I can find information on RideShare and public transit programs, specialized transit for seniors and disabled, or help you pay for fuel. Where do you need to go?",
-            "es": "Puedo encontrar información sobre programas de viajes compartidos y transporte público, transporte especializado para personas mayores y discapacitadas, o ayudarte a pagar el combustible. ¿A dónde necesitas ir?",
-            "ar": "يمكنني العثور على معلومات حول برامج المشاركة في الركوب ووسائل النقل العام، ووسائل النقل المتخصصة لكبار السن وذوي الإعاقة، أو مساعدتك في دفع ثمن الوقود. إلى أين تريد أن تذهب؟",
-            "fa": "من می توانم اطلاعاتی در مورد برنامه های اشتراک خودرو و حمل و نقل عمومی، حمل و نقل تخصصی برای سالمندان و معلولان پیدا کنم، یا به شما در پرداخت هزینه سوخت کمک کنم. کجا باید بروید؟",
-            "ps": "زه کولی شم د سفر شریکولو او عامه ترانزیت برنامو، د مشرانو او معیوبینو لپاره ځانګړي ترانزیت په اړه معلومات ومومم، یا ستاسو سره د تیلو төлбөр په ورکولو کې مرسته وکړم. تاسو چیرته تګ ته اړتیا لرئ؟",
-            "pt": "Posso encontrar informações sobre programas de carona e transporte público, transporte especializado para idosos e deficientes físicos, ou ajudá-lo a pagar o combustível. Para onde você precisa ir?",
-            "ne": "म राइडशेयर (RideShare) र सार्वजनिक यातायात कार्यक्रमहरू, ज्येष्ठ नागरिक र अपाङ्गता भएका व्यक्तिहरूका लागि विशेष यातायातको बारेमा जानकारी फेला पार्न सक्छु, वा तपाईंलाई इन्धनको लागि तिर्न मद्दत गर्न सक्छु। तपाईं कहाँ जानु पर्छ?",
-            "my": "RideShare လို အငှားယာဉ် မျှစီးတဲ့ အစီအစဉ်တွေနဲ့ အများပြည်သူ သယ်ယူပို့ဆောင်ရေး အစီအစဉ်တွေ၊ သက်ကြီးရွယ်အိုနဲ့ မသန်စွမ်းသူတွေအတွက် အထူး သယ်ယူပို့ဆောင်ရေး အစီအစဉ်တွေအကြောင်း သတင်းအချက်အလက်တွေ ရှာဖွေပေးတာ၊ ဒါမှမဟုတ် လောင်စာဆီဖိုး ပေးချေဖို့ ကူညီပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဘယ်သွားဖို့ လိုအပ်ပါသလဲရှင်။"
-        },
-        "workforce_prompt": {
-            "en": "I can help you find job training programs, adult education and language classes, or local hiring opportunities in Richmond. Are you looking for work or education help?",
-            "es": "Puedo ayudarte a encontrar programas de capacitación laboral, educación para adultos y clases de idiomas, u oportunidades de contratación local en Richmond. ¿Estás buscando trabajo o ayuda educativa?",
-            "ar": "يمكنني مساعدتك في العثور على برامج التدريب الوظيفي، وتعليم الكبار وفصول اللغة، أو فرص التوظيف المحلية في ريتشموند. هل تبحث عن عمل أو مساعدة تعليمية؟",
-            "fa": "من می توانم به شما در یافتن برنامه های آموزش شغلی، آموزش بزرگسالان و کلاس های زبان، یا فرصت های استخدام محلی در ریچموند کمک کنم. آیا به دنبال کار هستید یا کمک آموزشی؟",
-            "ps": "زه کولی شم تاسو سره د دندې روزنې برنامې، د لویانو زده کړې او ژبې ټولګي، یا په ریچمنډ کې د ځایی کار ګمارلو فرصتونو موندلو کې مرسته وکړم. ایا تاسو د کار یا تعلیمي مرستې په لټه کې یاست؟",
-            "pt": "Posso ajudá-lo a encontrar programas de treinamento de trabalho, educação de adultos e aulas de idiomas, ou oportunidades de contratação local em Richmond. Você está procurando emprego ou ajuda educacional?",
-            "ne": "म तपाईंलाई कामको तालिम कार्यक्रमहरू, वयस्क शिक्षा र भाषा कक्षाहरू, वा रिचमण्डमा स्थानीय भर्ती अवसरहरू फेला पार्न मद्दत गर्न सक्छु। के तपाईं काम वा शिक्षाको मद्दत खोज्दै हुनुहुन्छ?",
-            "my": "အလုပ်အကိုင် သင်တန်းတွေ၊ လူကြီးပညာရေးနဲ့ ဘာသာစကား သင်တန်းတွေ၊ ဒါမှမဟုတ် ရစ်ချ်မွန်က ဒေသတွင်း အလုပ်ခေါ်စာတွေကို ရှာဖွေဖို့ ကျွန်မ ကူညီပေးနိုင်ပါတယ်။ အလုပ်အကိုင် ဒါမှမဟုတ် ပညာရေးအတွက် အကူအညီ ရှာဖွေနေတာလားရှင်။"
-        }
+    "summary_explanation": {
+        "en": "You can show this summary to a provider so you don't have to repeat your story. If we lose connection, just type your 3-word passphrase to pick up right where we left off.",
+        "es": "Puedes mostrar este resumen a un proveedor para no tener que repetir tu historia. Si perdemos la conexión, simplemente escribe tu frase de 3 palabras para continuar donde lo dejamos.",
+        "ar": "يمكنك إظهار هذا الملخص لمقدم الخدمة حتى لا تضطر إلى تكرار قصتك. إذا فقدنا الاتصال، فقط اكتب عبارة المرور المكونة من 3 كلمات للمتابعة من حيث توقفنا.",
+        "fa": "می توانید این خلاصه را به یک ارائه دهنده نشان دهید تا مجبور نشوید داستان خود را تکرار کنید. اگر اتصال قطع شد، فقط عبارت 3 کلمه ای خود را تایپ کنید تا از همانجا که ماندیم ادامه دهیم.",
+        "ps": "تاسو کولی شئ دا لنډیز یو چمتو کونکي ته وښایئ ترڅو تاسو مجبور نه شئ خپله کیسه تکرار کړئ. که اړیکه پرې شي، یوازې خپله ۳ کلمې ولیکئ ترڅو له هغه ځایه دوام ورکړو چیرې چې موږ پریښود.",
+        "pt": "Você pode mostrar este resumo a um provedor para não ter que repetir sua história. Se perdermos a conexão, basta digitar sua frase de 3 palavras para continuar de onde paramos.",
+        "ne": "तपाईंले यो सारांश सेवा प्रदायकलाई देखाउन सक्नुहुन्छ ताकि तपाईंले आफ्नो कथा दोहोर्याउनु पर्दैन। यदि हाम्रो जडान टुट्यो भने, हामीले जहाँ छोडेका थियौं त्यहीँबाट सुरु गर्न तपाईंको ३-शब्दको पासफ्रेज टाइप गर्नुहोस्।",
+        "my": "သင့်ရဲ့ အဖြစ်အပျက်ကို ထပ်ခါတလဲလဲ ပြောနေစရာမလိုအောင် ဒီအနှစ်ချုပ်ကို ဝန်ဆောင်မှုပေးသူဆီ ပြသနိုင်ပါတယ်။ အကယ်၍ အဆက်အသွယ် ပြတ်သွားရင်၊ ကျွန်မတို့ ရပ်နားခဲ့တဲ့ နေရာကနေ ပြန်စဖို့ သင့်ရဲ့ စကားလုံး ၃ လုံးကို ရိုက်ထည့်လိုက်ပါ။"
+    },
+    "housing_prompt": {
+        "en": "I can help you find housing, apply for rent relief, or understand your rights as a tenant. What do you need help with regarding housing?",
+        "es": "Puedo ayudarte a encontrar vivienda, solicitar ayuda para el alquiler o entender tus derechos como inquilino. ¿En qué necesitas ayuda con respecto a la vivienda?",
+        "ar": "يمكنني مساعدتك في العثور على سكن، أو التقدم بطلب للحصول على مساعدة في دفع الإيجار، أو فهم حقوقك كمستأجر. ما الذي تحتاج إلى المساعدة فيه بخصوص السكن؟",
+        "fa": "من می توانم به شما در یافتن مسکن، درخواست کمک هزینه اجاره، یا درک حقوق خود به عنوان مستاجر کمک کنم. در رابطه با مسکن به چه کمکی نیاز دارید؟",
+        "ps": "زه کولی شم تاسو سره د کور په موندلو کې مرسته وکړم، د کرایې مرستې لپاره غوښتنه وکړم، یا د کرایه کونکي په توګه ستاسو په حقونو پوه شم. تاسو د کور په اړه څه مرستې ته اړتیا لرئ؟",
+        "pt": "Posso ajudá-lo a encontrar moradia, solicitar auxílio-aluguel ou entender seus direitos como inquilino. Com o que você precisa de ajuda em relação à moradia?",
+        "ne": "म तपाईंलाई आवास खोज्न, भाडा राहतको लागि आवेदन दिन, वा भाडामा बस्ने व्यक्तिको रूपमा तपाईंको अधिकारहरू बुझ्न मद्दत गर्न सक्छु। तपाईंलाई आवासको सम्बन्धमा के मद्दत चाहिन्छ?",
+        "my": "ကျွန်မအနေနဲ့ သင့်ကို အိမ်ရာရှာဖွေဖို့၊ အိမ်လခသက်သာခွင့် လျှောက်ထားဖို့ ဒါမှမဟုတ် အိမ်ငှားတစ်ယောက်အနေနဲ့ သင့်ရဲ့ အခွင့်အရေးတွေကို နားလည်စေဖို့ ကူညီပေးနိုင်ပါတယ်။ အိမ်ရာနဲ့ ပတ်သက်ပြီး ဘာကူညီပေးရမလဲရှင်။"
+    },
+    "food_prompt": {
+        "en": "I can locate nearby food pantries, explain how to apply for nutrition assistance benefits, or find free community meals. How can I help you with food today?",
+        "es": "Puedo localizar bancos de alimentos cercanos, explicarte cómo solicitar beneficios de asistencia nutricional o encontrar comidas comunitarias gratuitas. ¿Cómo puedo ayudarte con la comida hoy?",
+        "ar": "يمكنني تحديد مواقع بنوك الطعام القريبة، أو شرح كيفية التقدم للحصول على مزايا المساعدة الغذائية، أو العثور على وجبات مجتمعية مجانية. كيف يمكنني مساعدتك بخصوص الطعام اليوم؟",
+        "fa": "من می توانم انبارهای غذای مجاور را پیدا کنم، نحوه درخواست برای مزایای کمک تغذیه ای را توضیح دهم، یا وعده های غذایی رایگان در جامعه را پیدا کنم. امروز چگونه می توانم در زمینه غذا به شما کمک کنم؟",
+        "ps": "زه کولی شم نږدې د خواړو بانکونه ومومم، تشریح کړم چې څنګه د تغذیې مرستې ګټو لپاره غوښتنه وکړم، یا د ټولنې وړیا خواړه ومومم. زه نن ورځ د خواړو په برخه کې ستاسو سره څنګه مرسته کولی شم؟",
+        "pt": "Posso localizar bancos de alimentos próximos, explicar como solicitar benefícios de assistência nutricional ou encontrar refeições comunitárias gratuitas. Como posso ajudá-lo com comida hoje?",
+        "ne": "म नजिकैका फूड प्यान्ट्रीहरू फेला पार्न सक्छु, पोषण सहायता लाभहरूको लागि कसरी आवेदन दिने भनेर व्याख्या गर्न सक्छु, वा नि:शुल्क सामुदायिक खानाहरू फेला पार्न सक्छु। म तपाईंलाई आज खानाको बारेमा कसरी मद्दत गर्न सक्छु?",
+        "my": "အနီးအနားက အစားအသောက်လှူဒါန်းတဲ့ နေရာတွေကို ရှာဖွေပေးတာ၊ အာဟာရ အထောက်အပံ့ အကျိုးခံစားခွင့်တွေကို ဘယ်လိုလျှောက်ထားရမလဲဆိုတာ ရှင်းပြပေးတာ၊ ဒါမှမဟုတ် အခမဲ့ ရပ်ကွက်တွင်း အစားအသောက် အစီအစဉ်တွေကို ရှာဖွေပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဒီနေ့ အစားအသောက်နဲ့ ပတ်သက်ပြီး ဘယ်လို ကူညီပေးရမလဲရှင်။"
+    },
+    "legal_prompt": {
+        "en": "I can connect you with local legal aid for evictions, help with immigration documentation, or find advocacy services. What legal help are you looking for?",
+        "es": "Puedo conectarte con asistencia legal local para desalojos, ayuda con documentación de inmigración o encontrar servicios de defensa. ¿Qué ayuda legal estás buscando?",
+        "ar": "يمكنني توصيلك بالمساعدة القانونية المحلية في حالات الإخلاء، أو المساعدة في وثائق الهجرة، أو العثور على خدمات المناصرة. ما هي المساعدة القانونية التي تبحث عنها؟",
+        "fa": "من می توانم شما را با کمک های حقوقی محلی برای تخلیه ملک، کمک در مورد اسناد مهاجرت، یا یافتن خدمات وکالت حقوقی مرتبط کنم. به دنبال چه نوع کمک حقوقی هستید؟",
+        "ps": "زه کولی شم تاسو د ایستلو لپاره سیمه ایز قانوني مرستې سره وصل کړم، د کډوالۍ اسنادو کې مرسته وکړم، یا د مدافع وکیل خدمات ومومم. تاسو کوم قانوني مرستې په لټه کې یاست؟",
+        "pt": "Posso conectá-lo com assistência legal local para despejos, ajudar com documentação de imigração ou encontrar serviços de defesa. Qual ajuda legal você está procurando?",
+        "ne": "म तपाईंलाई निष्कासनको लागि स्थानीय कानुनी सहायतासँग जोड्न सक्छु, अध्यागमन कागजातमा मद्दत गर्न सक्छु, वा वकालत सेवाहरू फेला पार्न सक्छु। तपाईं कस्तो कानुनी मद्दत खोज्दै हुनुहुन्छ?",
+        "my": "အိမ်ပေါ်မှ နှင်ချခံရမှုတွေအတွက် ဒေသတွင်း ဥပဒေရေးရာ အကူအညီတွေနဲ့ ချိတ်ဆက်ပေးတာ၊ လူဝင်မှုကြီးကြပ်ရေး စာရွက်စာတမ်းတွေအတွက် ကူညီပေးတာ၊ ဒါမှမဟုတ် ရှေ့နေဝန်ဆောင်မှုတွေကို ရှာဖွေပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဘယ်လို ဥပဒေရေးရာ အကူအညီမျိုးကို ရှာဖွေနေပါသလဲရှင်။"
+    },
+    "healthcare_prompt": {
+        "en": "I can help you find free and low-cost clinics, mental health support, or explain how to sign up for health insurance like Medicaid. What health services do you need?",
+        "es": "Puedo ayudarte a encontrar clínicas gratuitas y de bajo costo, apoyo de salud mental o explicarte cómo inscribirte en un seguro médico como Medicaid. ¿Qué servicios de salud necesitas?",
+        "ar": "يمكنني مساعدتك في العثور على عيادات مجانية ومنخفضة التكلفة، أو دعم الصحة النفسية، أو شرح كيفية التسجيل في التأمين الصحي مثل Medicaid. ما هي الخدمات الصحية التي تحتاجها؟",
+        "fa": "من می توانم به شما در یافتن کلینیک های رایگان و کم هزینه، پشتیبانی بهداشت روان کمک کنم، یا نحوه ثبت نام برای بیمه درمانی مانند Medicaid را توضیح دهم. به چه خدمات بهداشتی نیاز دارید؟",
+        "ps": "زه کولی شم تاسو سره د وړیا او ټیټ لګښت کلینیکونو، رواني روغتیا مالتړ موندلو کې مرسته وکړم، یا تشریح کړم چې د روغتیا بیمې لکه میډیکاډ لپاره څنګه نوم لیکنه وکړم. تاسو کوم روغتیایی خدماتو ته اړتیا لرئ؟",
+        "pt": "Posso ajudá-lo a encontrar clínicas gratuitas e de baixo custo, apoio à saúde mental ou explicar como se inscrever em um seguro de saúde como o Medicaid. De quais serviços de saúde você precisa?",
+        "ne": "म तपाईंलाई नि:शुल्क र कम लागतका क्लिनिकहरू, मानसिक स्वास्थ्य समर्थन फेला पार्न, वा मेडिकेड (Medicaid) जस्ता स्वास्थ्य बीमाको लागि कसरी साइन अप गर्ने भनेर व्याख्या गर्न मद्दत गर्न सक्छु। तपाईंलाई कस्तो स्वास्थ्य सेवाहरू चाहिन्छ?",
+        "my": "အခမဲ့နဲ့ ကုန်ကျစရိတ်သက်သာတဲ့ ဆေးခန်းတွေ၊ စိတ်ကျန်းမာရေး အထောက်အပံ့တွေကို ရှာဖွေပေးတာ ဒါမှမဟုတ် Medicaid လိုမျိုး ကျန်းမာရေးအာမခံကို ဘယ်လို စာရင်းသွင်းရမလဲဆိုတာ ရှင်းပြပေးတာတွေကို ကူညီပေးနိုင်ပါတယ်။ ဘယ်လို ကျန်းမာရေး ဝန်ဆောင်မှုတွေ လိုအပ်ပါသလဲရှင်။"
+    },
+    "transportation_prompt": {
+        "en": "I can find information on RideShare and public transit programs, specialized transit for seniors and disabled, or help you pay for fuel. Where do you need to go?",
+        "es": "Puedo encontrar información sobre programas de viajes compartidos y transporte público, transporte especializado para personas mayores y discapacitadas, o ayudarte a pagar el combustible. ¿A dónde necesitas ir?",
+        "ar": "يمكنني العثور على معلومات حول برامج المشاركة في الركوب ووسائل النقل العام، ووسائل النقل المتخصصة لكبار السن وذوي الإعاقة، أو مساعدتك في دفع ثمن الوقود. إلى أين تريد أن تذهب؟",
+        "fa": "من می توانم اطلاعاتی در مورد برنامه های اشتراک خودرو و حمل و نقل عمومی، حمل و نقل تخصصی برای سالمندان و معلولان پیدا کنم، یا به شما در پرداخت هزینه سوخت کمک کنم. کجا باید بروید؟",
+        "ps": "زه کولی شم د سفر شریکولو او عامه ترانزیت برنامو، د مشرانو او معیوبینو لپاره ځانګړي ترانزیت په اړه معلومات ومومم، یا ستاسو سره د تیلو төлбөр په ورکولو کې مرسته وکړم. تاسو چیرته تګ ته اړتیا لرئ؟",
+        "pt": "Posso encontrar informações sobre programas de carona e transporte público, transporte especializado para idosos e deficientes físicos, ou ajudá-lo a pagar o combustível. Para onde você precisa ir?",
+        "ne": "म राइडशेयर (RideShare) र सार्वजनिक यातायात कार्यक्रमहरू, ज्येष्ठ नागरिक र अपाङ्गता भएका व्यक्तिहरूका लागि विशेष यातायातको बारेमा जानकारी फेला पार्न सक्छु, वा तपाईंलाई इन्धनको लागि तिर्न मद्दत गर्न सक्छु। तपाईं कहाँ जानु पर्छ?",
+        "my": "RideShare လို အငှားယာဉ် မျှစီးတဲ့ အစီအစဉ်တွေနဲ့ အများပြည်သူ သယ်ယူပို့ဆောင်ရေး အစီအစဉ်တွေ၊ သက်ကြီးရွယ်အိုနဲ့ မသန်စွမ်းသူတွေအတွက် အထူး သယ်ယူပို့ဆောင်ရေး အစီအစဉ်တွေအကြောင်း သတင်းအချက်အလက်တွေ ရှာဖွေပေးတာ၊ ဒါမှမဟုတ် လောင်စာဆီဖိုး ပေးချေဖို့ ကူညီပေးတာတွေ လုပ်ပေးနိုင်ပါတယ်။ ဘယ်သွားဖို့ လိုအပ်ပါသလဲရှင်။"
+    },
+    "workforce_prompt": {
+        "en": "I can help you find job training programs, adult education and language classes, or local hiring opportunities in Richmond. Are you looking for work or education help?",
+        "es": "Puedo ayudarte a encontrar programas de capacitación laboral, educación para adultos y clases de idiomas, u oportunidades de contratación local en Richmond. ¿Estás buscando trabajo o ayuda educativa?",
+        "ar": "يمكنني مساعدتك في العثور على برامج التدريب الوظيفي، وتعليم الكبار وفصول اللغة، أو فرص التوظيف المحلية في ريتشموند. هل تبحث عن عمل أو مساعدة تعليمية؟",
+        "fa": "من می توانم به شما در یافتن برنامه های آموزش شغلی، آموزش بزرگسالان و کلاس های زبان، یا فرصت های استخدام محلی در ریچموند کمک کنم. آیا به دنبال کار هستید یا کمک آموزشی؟",
+        "ps": "زه کولی شم تاسو سره د دندې روزنې برنامې، د لویانو زده کړې او ژبې ټولګي، یا په ریچمنډ کې د ځایی کار ګمارلو فرصتونو موندلو کې مرسته وکړم. ایا تاسو د کار یا تعلیمي مرستې په لټه کې یاست؟",
+        "pt": "Posso ajudá-lo a encontrar programas de treinamento de trabalho, educação de adultos e aulas de idiomas, ou oportunidades de contratação local em Richmond. Você está procurando emprego ou ajuda educacional?",
+        "ne": "म तपाईंलाई कामको तालिम कार्यक्रमहरू, वयस्क शिक्षा र भाषा कक्षाहरू, वा रिचमण्डमा स्थानीय भर्ती अवसरहरू फेला पार्न मद्दत गर्न सक्छु। के तपाईं काम वा शिक्षाको मद्दत खोज्दै हुनुहुन्छ?",
+        "my": "အလုပ်အကိုင် သင်တန်းတွေ၊ လူကြီးပညာရေးနဲ့ ဘာသာစကား သင်တန်းတွေ၊ ဒါမှမဟုတ် ရစ်ချ်မွန်က ဒေသတွင်း အလုပ်ခေါ်စာတွေကို ရှာဖွေဖို့ ကျွန်မ ကူညီပေးနိုင်ပါတယ်။ အလုပ်အကိုင် ဒါမှမဟုတ် ပညာရေးအတွက် အကူအညီ ရှာဖွေနေတာလားရှင်။"
     }
+}
