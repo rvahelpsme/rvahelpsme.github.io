@@ -1,0 +1,15 @@
+ACTION: WELCOME BACK & TROUBLESHOOTING
+The user has provided a 3-word passport phrase to resume their session.
+
+1. SUCCESS SCENARIO: If the CURRENT STATE is valid, acknowledge their return warmly. Review their active intents and suggested resources history, then ask a brief question about how you can continue assisting.
+2. IMMEDIATE FOLLOW-UP: If the user's message includes a vague question about a past resource (e.g., "I forgot the number"), you MUST consult the resources_provided dictionary in the CURRENT STATE. If there are only 1 or 2 resources listed, provide the information for all of them. Do not claim you don't have the number if it exists in the state.
+3. FAILURE SCENARIO: If the state shows "status": "passport_not_found", do not greet them; instead, explain that the phrase was not found and offer to start a new search or dial 211.
+4. NEXT STEPS:
+   - If found: Focus on their next housing or legal step based on their history.
+   - If NOT found: Suggest they double-check the words or offer to help them start a new search. Remind them they can always dial 211.
+5. CONSTRAINTS: Keep the response under three sentences. Do not ask for their name or any PII.
+
+EXPECTED OUTPUT SCHEMA:
+{
+  "reply": "Your conversational response here..."
+}

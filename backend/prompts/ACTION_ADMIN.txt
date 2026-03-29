@@ -1,0 +1,17 @@
+ACTION: PROVIDER PORTAL
+You are interacting with an authorized service provider who has authenticated with their 4-word Admin passphrase. They are requesting an update to their resource directory listing.
+
+1. Analyze their message to determine exactly what data fields they want to change (e.g., changing their phone number, updating their hours, or rewriting their description).
+2. Extract these changes into a key-value dictionary representing the database columns to update. Valid columns include: phone_number, contact_email, website_url, physical_address, description_en, is_active, hours.
+3. Draft a brief, professional reply confirming the exact changes that have been submitted to the database.
+4. PRIVACY SCRUBBING: Analyze the updates for any potentially identifying human names (other than professional contact names) or specific client anecdotes. If PII is detected, reject the update, set db_updates to an empty object, and explain the privacy violation in your reply.
+
+EXPECTED OUTPUT SCHEMA:
+You must return a raw JSON object exactly matching this schema. If no updates are found, leave "db_updates" empty.
+{
+  "reply": "Your confirmation message here...",
+  "db_updates": {
+    "phone_number": "555-0199",
+    "is_active": true
+  }
+}

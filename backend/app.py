@@ -1,20 +1,34 @@
+import base64
 import os
+import re
 import threading
+from typing import Tuple, Dict, Any, Optional
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from supabase import create_client
+from supabase import create_client, Client
 from dotenv import load_dotenv
 from google import genai
-from datetime import datetime, timezone
+from google.cloud import texttospeech
 
-from src.passphrase import generate_passphrase, get_passphrase_hash, is_passphrase_in_use, extract_passphrase
-from src.resources import get_verified_directory
-from src.chat import get_rhonda_response
+from src.static_responses import RESPONSES
+from src.passphrase import (
+    extract_passphrase, get_admin_state, get_resident_state,
+    create_new_passport, save_resident_state_async, save_admin_updates_async
+)
+from src.resources import search_and_prune_directory
+from src.chat import (
+    execute_admin_prompt, execute_welcome_prompt,
+    execute_classifier_prompt, execute_responder_prompt,
+    execute_summary_prompt
+)
 
 load_dotenv()
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.path.join(BASE_DIR, 'gcp-key.json')
+
 app = Flask(__name__)
-# Restrict CORS in production if possible, but keeping open for the hackathon sprint
 CORS(app)
 
 supabase_url = os.environ.get("SUPABASE_URL")
@@ -24,222 +38,256 @@ pepper = os.environ.get("PASSPORT_PEPPER")
 if not all([supabase_url, supabase_key, pepper]):
     raise ValueError("CRITICAL: Missing Supabase URL, Key, or Pepper from environment.")
 
-supabase = create_client(supabase_url, supabase_key)
-
+supabase: Client = create_client(supabase_url, supabase_key)
 gemini_key = os.environ.get("GEMINI_API_KEY")
-if gemini_key:
-    ai_client = genai.Client(api_key=gemini_key)
-else:
-    ai_client = None
+ai_client = genai.Client(api_key=gemini_key) if gemini_key else None
 
 
-@app.route('/')
-def index():
-    return "Rhonda Backend V4 is live. 3-Word Resident and 4-Word Admin routing active."
+def generate_tts_audio(text: str, lang_code: str = 'en') -> Optional[str]:
+    try:
+        client = texttospeech.TextToSpeechClient()
+
+        voice_mapping = {
+            "en": {"code": "en-US", "name": "en-US-Journey-F"},
+            "es": {"code": "es-US", "name": "es-US-Neural2-A"},
+            "pt": {"code": "pt-BR", "name": "pt-BR-Neural2-A"},
+            "ar": {"code": "ar-XA", "name": "ar-XA-Wavenet-A"},
+            "ne": {"code": "ne-NP", "name": "ne-NP-Wavenet-A"},
+            "fa": {"code": "fa-IR", "name": "fa-IR-Wavenet-A"},
+            "default": {"code": "en-US", "name": "en-US-Journey-F"}
+        }
+
+        selected = voice_mapping.get(lang_code, voice_mapping["default"])
+        clean_text = text.replace('<br>', '\n').replace('<b>', '').replace('</b>', '')
+
+        synthesis_input = texttospeech.SynthesisInput(text=clean_text)
+        voice = texttospeech.VoiceSelectionParams(language_code=selected["code"], name=selected["name"])
+        audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3, speaking_rate=0.95)
+
+        response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
+        return base64.b64encode(response.audio_content).decode('utf-8')
+    except Exception as e:
+        print(f"Google TTS Error: {e}")
+        return None
 
 
-@app.route('/api/passport/create', methods=['POST'])
-def create_passport():
-    max_attempts = 5
+def _format_suggested_resources(pruned_directory: list, ai_reply: str, state: dict) -> None:
+    for resource in pruned_directory:
+        org_name = resource.get('org_name') or ''
+        service_name = resource.get('service_name') or ''
+        dict_key = f"{service_name} (via {org_name})" if org_name else service_name
 
-    for _ in range(max_attempts):
-        plain_phrase = generate_passphrase(num_words=3)  # Explicitly 3 words for residents
+        if (org_name and org_name.lower() in ai_reply.lower()) or (
+                service_name and service_name.lower() in ai_reply.lower()):
+            if "resources_provided" not in state:
+                state["resources_provided"] = {}
 
-        if not is_passphrase_in_use(supabase, plain_phrase, pepper):
-            hashed_phrase = get_passphrase_hash(plain_phrase, pepper)
-
-            default_state = {
-                "routing_preferences": {
-                    "needs_family_capacity": False,
-                    "needs_no_papers_intake": False
-                },
-                "active_intents": {},
-                "language": "en",
-                "intake_prep": {}
+            raw_phone = resource.get('phone_number')
+            state["resources_provided"][dict_key] = {
+                "phone": raw_phone if raw_phone else "211",
+                "status": "suggested"
             }
 
-            try:
-                supabase.table('passports').insert({
-                    "passphrase_hash": hashed_phrase,
-                    "state_json": default_state
-                }).execute()
 
-                return jsonify({
-                    "status": "success",
-                    "passphrase": plain_phrase,
-                    "state_json": default_state
-                }), 201
-            except Exception as e:
-                return jsonify({"error": f"Database insertion failed: {str(e)}"}), 500
-
-    return jsonify({"error": "Failed to generate a unique passport after multiple attempts."}), 500
-
-
-@app.route('/api/passport/access', methods=['POST'])
-def access_passport():
+@app.route('/tts', methods=['POST'])
+def get_audio():
     data = request.json
-    raw_phrase = data.get('passphrase', '')
+    text = data.get('text', '').strip()
+    lang = data.get('lang', 'en')
+    if not text: return jsonify({"error": "No text provided"}), 400
+    audio_b64 = generate_tts_audio(text, lang)
+    if audio_b64: return jsonify({"status": "success", "audio_base64": audio_b64}), 200
+    return jsonify({"error": "Failed to generate audio"}), 500
 
-    # FIX: Unpack the tuple correctly
-    clean_phrase, word_count = extract_passphrase(raw_phrase)
 
-    if not clean_phrase:
-        return jsonify({"error": "Valid passphrase is required"}), 400
+@app.route('/summary', methods=['POST'])
+def generate_summary():
+    data = request.json
+    session_hash = data.get('session_hash')
+    target_lang = data.get('lang', 'en')
 
-    hashed_phrase = get_passphrase_hash(clean_phrase, pepper)
+    if not session_hash: return jsonify({"error": "Session hash required"}), 400
 
-    # Check which table to query based on word count
-    table_name = 'providers' if word_count == 4 else 'passports'
-    response = supabase.table(table_name).select('*').eq('passphrase_hash', hashed_phrase).execute()
+    state, _ = get_resident_state(supabase, hash_only=session_hash)
+    if not state: return jsonify({"error": "Passport not found"}), 404
 
-    if not response.data:
-        return jsonify({"error": "Credential not found or invalid passphrase."}), 404
-
-    record_data = response.data[0]
-
-    try:
-        supabase.table(table_name).update({
-            "last_accessed": datetime.now(timezone.utc).isoformat()
-        }).eq('passphrase_hash', hashed_phrase).execute()
-    except Exception as e:
-        print(f"Warning: Non-fatal error updating access timestamp: {e}")
-
-    # Return the appropriate payload
-    if word_count == 4:
-        return jsonify({
-            "status": "success",
-            "role": "admin",
-            "provider_hash": hashed_phrase
-        }), 200
-    else:
-        return jsonify({
-            "status": "success",
-            "role": "resident",
-            "state_json": record_data['state_json']
-        }), 200
+    eng_summary, trans_summary, status = execute_summary_prompt(ai_client, state, target_lang)
+    if status == 200:
+        return jsonify({"status": "success", "english": eng_summary, "translated": trans_summary}), 200
+    return jsonify({"error": "Summary generation failed"}), 500
 
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    if not ai_client:
-        return jsonify({"error": "AI client not configured."}), 500
+    if not ai_client: return jsonify({"error": "AI client not configured."}), 500
 
     data = request.json
     user_message = data.get('message', '').strip()
-    current_hash = data.get('session_hash')
+    session_hash = data.get('session_hash')
+    if not user_message: return jsonify({"error": "Message required"}), 400
 
-    if not user_message:
-        return jsonify({"error": "Message required"}), 400
-
-    # 1. Scan the message for a new passphrase
-    clean_phrase, word_count = extract_passphrase(user_message)
-
-    is_admin = False
-    active_hash = current_hash
-    state = {}
-    new_phrase_generated = None
-
-    # 2. If the user typed a phrase in chat, it overrides their current session
-    if clean_phrase:
-        active_hash = get_passphrase_hash(clean_phrase, pepper)
-        if word_count == 4:
-            is_admin = True
-            provider_res = supabase.table('providers').select('*').eq('passphrase_hash', active_hash).execute()
-            if not provider_res.data:
-                return jsonify({"error": "Admin credentials not found."}), 404
-            resources_res = supabase.table('resources').select('*').eq('provider_hash', active_hash).execute()
-            state = {"managed_resources": resources_res.data}
-        elif word_count == 3:
-            passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash', active_hash).execute()
-            if not passport_res.data:
-                return jsonify({"error": "Passport not found."}), 404
-            state = passport_res.data[0]['state_json']
-
-    # 3. If no phrase in chat, check for an existing session hash
-    elif current_hash:
-        provider_res = supabase.table('providers').select('*').eq('passphrase_hash', current_hash).execute()
-        if provider_res.data:
-            is_admin = True
-            resources_res = supabase.table('resources').select('*').eq('provider_hash', current_hash).execute()
-            state = {"managed_resources": resources_res.data}
-        else:
-            passport_res = supabase.table('passports').select('state_json').eq('passphrase_hash',
-                                                                               current_hash).execute()
-            if not passport_res.data:
-                active_hash = None
-            else:
-                state = passport_res.data[0]['state_json']
-
-    # 4. If completely anonymous, create a new resident passport
-    if not active_hash and not is_admin:
-        new_phrase_generated = generate_passphrase(num_words=3)
-        active_hash = get_passphrase_hash(new_phrase_generated, pepper)
-        state = {
-            "routing_preferences": {"needs_family_capacity": False, "needs_no_papers_intake": False},
-            "active_intents": {},
-            "suggested_resources": [],
-            "language": "en",
-            "intake_prep": {}
-        }
-        supabase.table('passports').insert({
-            "passphrase_hash": active_hash,
-            "state_json": state
-        }).execute()
-
-    # 5. Fetch directory and build AI context
-    directory = [] if is_admin else get_verified_directory()
-
-    llm_message = user_message
-    if clean_phrase:
-        llm_message = (
-            f"[System Note: The user just successfully authenticated using the secure phrase '{clean_phrase}'. "
-            f"Their saved state is loaded. If their message below is ONLY the phrase, warmly welcome them back. "
-            f"Otherwise, answer their question normally.]\n\nUser: {user_message}"
-        )
-
-    # Unpack the 4 variables from the updated chat.py logic
-    reply, new_state, db_updates, status_code = get_rhonda_response(
-        ai_client,
-        llm_message,
-        state,
-        directory,
-        is_admin=is_admin
-    )
-
-    if status_code != 200:
-        return jsonify({"error": reply}), status_code
-
-    # 6. Execute Database Writes Asynchronously
-    def background_tasks():
-        if not is_admin:
-            try:
-                supabase.table('passports').update({
-                    "state_json": new_state,
-                    "last_accessed": datetime.now(timezone.utc).isoformat()
-                }).eq('passphrase_hash', active_hash).execute()
-            except Exception as e:
-                print(f"Background passport update failed: {e}")
-
-        if is_admin and db_updates:
-            for update in db_updates:
-                try:
-                    supabase.table('resources').update({
-                        update["column"]: update["new_value"]
-                    }).eq('id', update["resource_id"]).eq('provider_hash', active_hash).execute()
-                except Exception as e:
-                    print(f"Background resource update failed: {e}")
-
-    threading.Thread(target=background_tasks).start()
-
-    # 7. Return the response to the frontend
-    response_payload = {
-        "response": reply,
-        "status": "success",
-        "session_hash": active_hash
+    # -------------------------------------------------------------------------
+    # PHASE 1: EXACT MATCH SHORT-CIRCUIT (UI Buttons & System Triggers ONLY)
+    # -------------------------------------------------------------------------
+    system_triggers = {
+        "INIT_GREETING": "greeting",
+        "SYSTEM_PASSPORT_REVEAL": "passport_info",
+        "SYSTEM_SUMMARY_HINT": "summary_hint",
+        "How do you protect my privacy and data?": "privacy",
+        "I need help finding stable housing.": "housing_prompt",
+        "I need help getting food for my family.": "food_prompt",
+        "I need legal help.": "legal_prompt",
+        "I need healthcare.": "healthcare_prompt",
+        "I need help with transportation.": "transportation_prompt",
+        "I need help with jobs or school.": "workforce_prompt"
     }
 
-    if new_phrase_generated:
-        response_payload["new_passphrase"] = new_phrase_generated
+    if user_message in system_triggers:
+        response_key = system_triggers[user_message]
+        lang_code = "en"
+        is_new_user = False
+        new_phrase = None
+        active_hash = session_hash
+
+        if session_hash:
+            state, active_hash = get_resident_state(supabase, hash_only=session_hash)
+            if state:
+                lang_code = state.get("language", "en")
+            else:
+                state, active_hash, new_phrase = create_new_passport(supabase, pepper)
+                is_new_user = True
+        else:
+            state, active_hash, new_phrase = create_new_passport(supabase, pepper)
+            is_new_user = True
+
+        reply = RESPONSES[response_key].get(lang_code, RESPONSES[response_key]["en"])
+
+        payload = {
+            "response": reply,
+            "status": "success",
+            "session_hash": active_hash,
+            "language": lang_code,
+            "is_static": True  # <--- Frontend skips dynamic count, loads instantly
+        }
+        if is_new_user and new_phrase:
+            payload["new_passphrase"] = new_phrase
+
+        return jsonify(payload), 200
+
+    # -------------------------------------------------------------------------
+    # PHASE 2: PASSPHRASE AUTHENTICATION
+    # -------------------------------------------------------------------------
+    clean_phrase, word_count = extract_passphrase(user_message)
+
+    if word_count == 0:
+        raw_words = re.sub(r'[^A-Za-z\s]', ' ', user_message).split()
+        upper_sequence = sum(1 for w in raw_words if w.isupper() and len(w) > 1)
+        if upper_sequence >= 3:
+            return jsonify({
+                "response": "I couldn't find a record for that specific phrase. Please double-check the words or let me know if you'd like to start a new search.",
+                "status": "not_found"
+            }), 200
+
+    if word_count == 4:
+        admin_state, provider_hash = get_admin_state(supabase, clean_phrase, pepper)
+        if not admin_state: return jsonify({"error": "Admin credentials not found."}), 404
+        reply, db_updates, status_code = execute_admin_prompt(ai_client, user_message, admin_state)
+        if db_updates: threading.Thread(target=save_admin_updates_async,
+                                        args=(supabase, provider_hash, db_updates)).start()
+        return jsonify({"response": reply, "status": "success", "session_hash": provider_hash}), status_code
+
+    if word_count == 3:
+        resident_state, passport_hash = get_resident_state(supabase, clean_phrase, pepper)
+        if resident_state is None:
+            failure_context = {"language": "en", "status": "passport_not_found"}
+            reply, _ = execute_welcome_prompt(ai_client, f"SYSTEM_NOTIFY: Passport '{clean_phrase}' not found.",
+                                              failure_context, clean_phrase)
+            return jsonify({"response": reply, "status": "not_found"}), 200
+        reply, status_code = execute_welcome_prompt(ai_client, user_message, resident_state, clean_phrase)
+        return jsonify({"response": reply, "status": "success", "session_hash": passport_hash,
+                        "language": resident_state.get("language", "en")}), status_code
+
+    # -------------------------------------------------------------------------
+    # PHASE 3: ORGANIC CHAT LOGIC
+    # -------------------------------------------------------------------------
+    is_new_user = False
+    new_phrase = None
+
+    if session_hash:
+        state, active_hash = get_resident_state(supabase, hash_only=session_hash)
+        if not state:
+            state, active_hash, new_phrase = create_new_passport(supabase, pepper)
+            is_new_user = True
+    else:
+        state, active_hash, new_phrase = create_new_passport(supabase, pepper)
+        is_new_user = True
+
+    user_words = user_message.split()
+    follow_up_triggers = {"number", "phone", "again", "what", "where", "name", "address"}
+    is_follow_up = any(w in user_message.lower() for w in follow_up_triggers)
+
+    if state.get("language") != "pending" and (len(user_words) < 7 or is_follow_up):
+        is_vague = len(user_words) < 3 and not is_follow_up
+        class_data = {
+            "broad_buckets": [k for k, v in state.get("active_intents", {}).items() if v is True],
+            "detected_language": state["language"],
+            "needs_clarification": is_vague,
+            "primary_urgency": state.get("active_intents", {}).get("primary"),
+            "specific_intents": [],
+            "is_emergency": False,
+            "static_intent": None
+        }
+        class_status = 200
+    else:
+        class_data, class_status = execute_classifier_prompt(ai_client, user_message)
+
+    if class_status != 200: return jsonify({"error": "Classification failed."}), class_status
+
+    if state.get("language") == "pending": state["language"] = class_data.get("detected_language", "en")
+    locked_lang = state.get("language", "en")
+
+    # -------------------------------------------------------------------------
+    # PHASE 4: THE LLM DYNAMIC INTENT CATCHER
+    # -------------------------------------------------------------------------
+    static_intent = class_data.get("static_intent")
+
+    if static_intent and static_intent in RESPONSES:
+        reply = RESPONSES[static_intent].get(locked_lang, RESPONSES[static_intent]["en"])
+        payload = {
+            "response": reply, "status": "success", "session_hash": active_hash, "language": locked_lang,
+            "is_static": False  # <--- Critical: Frontend will increment dynamic count
+        }
+        if is_new_user and new_phrase: payload["new_passphrase"] = new_phrase
+        return jsonify(payload), 200
+
+    # -------------------------------------------------------------------------
+    # PHASE 5: FULL DATABASE SEARCH (Responder)
+    # -------------------------------------------------------------------------
+    state["active_intents"]["primary"] = class_data.get("primary_urgency")
+    for bucket in class_data.get("broad_buckets", []):
+        state["active_intents"][bucket] = True
+
+    pruned_directory = []
+    if class_data.get("needs_clarification"):
+        state["_needs_clarification"] = True
+    else:
+        state["_needs_clarification"] = False
+        pruned_directory = search_and_prune_directory(supabase, class_data, locked_lang)
+
+    reply, updated_state, resp_status = execute_responder_prompt(ai_client, user_message, state, pruned_directory)
+    updated_state.pop("_needs_clarification", None)
+
+    if pruned_directory: _format_suggested_resources(pruned_directory, reply, updated_state)
+
+    if resp_status != 200: return jsonify({"error": "Response generation failed."}), resp_status
+
+    threading.Thread(target=save_resident_state_async, args=(supabase, active_hash, updated_state)).start()
+
+    response_payload = {
+        "response": reply, "status": "success", "session_hash": active_hash,
+        "language": updated_state.get("language", "en"), "is_static": False
+    }
+    if is_new_user and new_phrase: response_payload["new_passphrase"] = new_phrase
 
     return jsonify(response_payload)
 

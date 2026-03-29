@@ -1,0 +1,340 @@
+/* ==========================================================================
+   Design System Variables
+   ========================================================================== */
+:root {
+    /* Colors */
+    --pi-bg: #F7F4ED;
+    --pi-text-dark: #0E372B;
+    --pi-user-bubble: #E6E1D6;
+    --pi-placeholder: #B5B0A3;
+    --pi-muted: #8F8C84;
+    --pi-send-active: #0F794B;
+    --pi-send-inactive: #AED2C0;
+    --pi-mic-active: #D9534F;
+
+    /* Typography */
+    --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ==========================================================================
+   Base & Resets
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--pi-bg);
+    color: var(--pi-text-dark);
+    font-family: var(--font-sans);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ==========================================================================
+   Layout Components
+   ========================================================================== */
+#app-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 24px 24px 48px;
+    background: linear-gradient(to bottom, var(--pi-bg) 60%, transparent);
+    font-family: var(--font-serif);
+    font-size: 24px;
+    color: var(--pi-text-dark);
+    text-align: center;
+    z-index: 50;
+    pointer-events: none;
+}
+
+#chat-container {
+    flex: 1;
+    width: 100%;
+    max-width: 800px;
+    padding: 90px 24px 180px; /* Increased bottom padding */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   Chat Bubbles
+   ========================================================================== */
+.message-row {
+    display: flex;
+    width: 100%;
+}
+
+.message-row.user {
+    justify-content: flex-end;
+}
+
+.message-row.rhonda {
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.user .message {
+    font-family: var(--font-serif);
+    background-color: var(--pi-user-bubble);
+    color: var(--pi-text-dark);
+    padding: 14px 22px;
+    border-radius: 24px;
+    font-size: 18px;
+    line-height: 1.4;
+    max-width: 75%;
+}
+
+.rhonda .message {
+    font-family: var(--font-serif);
+    color: var(--pi-text-dark);
+    font-size: 20px;
+    line-height: 1.45;
+    max-width: 90%;
+    min-height: 1.45em;
+    word-break: break-word;
+    unicode-bidi: plaintext;
+    background-color: var(--pi-send-inactive);
+    padding: 14px 22px;
+    border-radius: 24px;
+}
+
+/* Container for the speaker button */
+.rhonda .actions {
+    display: flex;
+    gap: 16px;
+    /* Pulls the circle up to overlap the bottom curve of the bubble */
+    margin-top: -16px;
+    /* Sets the left point of the circle perfectly in line with the bubble's left edge */
+    margin-left: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* The White Circle Speaker Button */
+.action-icon {
+    cursor: pointer;
+    width: 34px; /* Reduced by ~10% */
+    height: 34px; /* Reduced by ~10% */
+    background-color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pi-text-dark);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+    border: 1px solid var(--pi-user-bubble);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.action-icon svg {
+    width: 16px; /* Scaled down proportionally to fit the smaller circle */
+    height: 16px;
+    transition: color 0.2s;
+}
+
+.action-icon:hover {
+    color: var(--pi-send-active);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.action-icon.playing {
+    background-color: var(--pi-send-active);
+    color: #FFFFFF;
+    border-color: var(--pi-send-active);
+}
+
+/* ==========================================================================
+   Input Area
+   ========================================================================== */
+.input-wrapper {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    max-width: 800px;
+    padding: 24px;
+    background: linear-gradient(to top, var(--pi-bg) 75%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-pill {
+    background: #FFFFFF;
+    width: 100%;
+    max-width: 700px;
+    border-radius: 30px;
+    padding: 8px 10px 8px 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+}
+
+#user-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    font-family: var(--font-serif);
+    font-size: clamp(14px, 3.8vw, 21px);
+    background: transparent;
+    color: var(--pi-text-dark);
+    padding: 8px 4px;
+    resize: none;
+    overflow-y: auto;
+    min-height: 40px;
+    max-height: 150px;
+    line-height: 1.3;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#user-input::-webkit-scrollbar {
+    display: none;
+}
+
+#user-input::placeholder {
+    color: var(--pi-placeholder);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Controls */
+#mic-btn, #send-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    flex-shrink: 0;
+    margin-bottom: 2px;
+}
+
+#mic-btn {
+    background: transparent;
+    color: var(--pi-muted);
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.1s;
+}
+
+#mic-btn:hover {
+    color: var(--pi-text-dark);
+}
+
+#mic-btn.listening {
+    color: var(--pi-mic-active);
+    animation: pulse-mic 1.5s infinite;
+}
+
+#mic-btn.listening svg {
+    filter: drop-shadow(0 0 5px rgba(217, 83, 79, 0.5));
+}
+
+#send-btn {
+    background-color: var(--pi-send-inactive);
+    color: #FFFFFF;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: not-allowed;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+#send-btn.active {
+    background-color: var(--pi-send-active);
+    cursor: pointer;
+}
+
+#send-btn.active:active {
+    transform: scale(0.95);
+}
+
+.disclaimer {
+    margin-top: 14px;
+    color: var(--pi-muted);
+    white-space: nowrap;
+    font-size: clamp(8px, 2.8vw, 13px);
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   Animations & Overrides
+   ========================================================================== */
+svg {
+    display: block;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+
+@keyframes pulse-mic {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   Intent Grid (Onboarding)
+   ========================================================================== */
+.intent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px; /* Removed negative margin to restore natural flow */
+    width: 100%;
+}
+
+.intent-btn {
+    background: #FFFFFF;
+    border: 1px solid var(--pi-user-bubble);
+    border-radius: 16px;
+    padding: 12px 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.intent-btn:hover {
+    border-color: var(--pi-send-active);
+    color: var(--pi-send-active);
+    box-shadow: 0 4px 12px rgba(15, 121, 75, 0.1);
+}
+
+.intent-btn svg {
+    width: 24px;
+    height: 24px;
+    color: var(--pi-text-dark);
+    transition: color 0.2s;
+}
+
+.intent-btn:hover svg {
+    color: var(--pi-send-active);
+}
+
+.intent-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pi-text-dark);
+    text-align: center;
+    font-family: var(--font-sans);
+}

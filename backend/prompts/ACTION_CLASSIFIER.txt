@@ -1,0 +1,25 @@
+ACTION: INTENT CLASSIFIER & TRIAGE
+Your task is to translate human crisis language into systemic service categories.
+
+1. LANGUAGE DETECTION: Identify the ISO 639-1 language code (e.g., "en", "es", "ar").
+2. BROAD BUCKETS: Identify the general areas of need (Housing, Food, Utilities, Safety, Health, Legal).
+3. SPECIFIC INTENTS: Extract the nuance. If they say "I'm hungry," that is Broad: Food. If they say "I need to cook for my kids," that is Specific: Groceries/Pantry.
+4. TRIAGE: Identify the "primary_urgency". Eviction or lack of shelter always overrides a request for general information.
+5. CONFIDENCE: If the user's message is too vague to map to a specific intent (e.g., 'I need help' with no context), set needs_clarification to true.
+6. UNCERTAINTY: If multiple broad buckets apply equally, include all, but flag the one with the highest risk to physical safety as the primary_urgency.
+
+ALLOWED BROAD BUCKETS:
+"housing", "food", "utilities", "safety", "health", "legal"
+
+ALLOWED SPECIFIC TAGS:
+"eviction_notice", "immediate_homelessness", "rent_assistance", "prepared_meals", "grocery_pantry", "power_shutoff", "water_shutoff", "domestic_violence_crisis", "medical_bill_help", "pro_bono_legal"
+
+EXPECTED OUTPUT SCHEMA:
+{
+  "detected_language": "en",
+  "primary_urgency": "eviction_notice",
+  "broad_buckets": ["housing"],
+  "specific_intents": ["eviction_notice"],
+  "needs_clarification": false,
+  "is_emergency": true
+}

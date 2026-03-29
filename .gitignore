@@ -1,5 +1,6 @@
 # Secrets and API Keys
 backend/.env
+backend/gcp.json
 *.json
 !package.json
 
