@@ -1,18 +1,15 @@
 ACTION: INTENT CLASSIFIER & TRIAGE
 Your task is to translate human crisis language into systemic service categories.
 
-1. LANGUAGE DETECTION: Identify the ISO 639-1 language code (e.g., "en", "es", "ar").
-2. BROAD BUCKETS: Identify the general areas of need (Housing, Food, Utilities, Safety, Health, Legal).
-3. SPECIFIC INTENTS: Extract the nuance. If they say "I'm hungry," that is Broad: Food. If they say "I need to cook for my kids," that is Specific: Groceries/Pantry.
-4. TRIAGE: Identify the "primary_urgency". Eviction or lack of shelter always overrides a request for general information.
-5. CONFIDENCE: If the user's message is too vague to map to a specific intent (e.g., 'I need help' with no context), set needs_clarification to true.
-6. UNCERTAINTY: If multiple broad buckets apply equally, include all, but flag the one with the highest risk to physical safety as the primary_urgency.
-
-ALLOWED BROAD BUCKETS:
-"housing", "food", "utilities", "safety", "health", "legal"
-
-ALLOWED SPECIFIC TAGS:
-"eviction_notice", "immediate_homelessness", "rent_assistance", "prepared_meals", "grocery_pantry", "power_shutoff", "water_shutoff", "domestic_violence_crisis", "medical_bill_help", "pro_bono_legal"
+1. LANGUAGE: Identify the ISO 639-1 language code (e.g., "en", "es").
+2. BROAD BUCKETS: Identify general areas of need (Housing, Food, Utilities, Safety, Health, Legal).
+3. SPECIFIC INTENTS: Extract nuance. (e.g., "I'm hungry" -> Food. "I need to cook" -> Groceries/Pantry).
+4. DEMOGRAPHICS: Identify specific user traits mentioned (e.g., "veteran", "senior", "recently incarcerated", "disabled"). Add these to user_demographics.
+5. TRIAGE: Identify "primary_urgency". Eviction or lack of shelter overrides general information.
+6. CONFIDENCE: If the message is too vague, set needs_clarification to true.
+7. STATIC INTENT ROUTING: If the message is a general inquiry about a category or the app itself, output one of these keys in "static_intent":
+- "housing_prompt", "food_prompt", "legal_prompt", "healthcare_prompt", "transportation_prompt", "workforce_prompt", "privacy", "about_me".
+If it is a specific situational query (e.g. "I am being evicted tomorrow"), set "static_intent" to null.
 
 EXPECTED OUTPUT SCHEMA:
 {
@@ -20,6 +17,8 @@ EXPECTED OUTPUT SCHEMA:
   "primary_urgency": "eviction_notice",
   "broad_buckets": ["housing"],
   "specific_intents": ["eviction_notice"],
+  "user_demographics": ["veteran"],
   "needs_clarification": false,
-  "is_emergency": true
+  "is_emergency": true,
+  "static_intent": null
 }

@@ -1,6 +1,3 @@
-/* ==========================================================================
-   Design System Variables
-   ========================================================================== */
 :root {
     --pi-bg: #F7F4ED;
     --pi-text-dark: #0E372B;
@@ -14,14 +11,7 @@
     --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* ==========================================================================
-   Base & Resets
-   ========================================================================== */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     background-color: var(--pi-bg);
@@ -33,9 +23,6 @@ body {
     align-items: center;
 }
 
-/* ==========================================================================
-   3G Banner & Typing Indicator
-   ========================================================================== */
 #network-banner {
     background-color: #D9534F;
     color: white;
@@ -75,9 +62,6 @@ body {
     40% { transform: scale(1); }
 }
 
-/* ==========================================================================
-   Layout Components
-   ========================================================================== */
 #app-header {
     position: fixed;
     top: 0;
@@ -119,9 +103,7 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(15, 121, 75, 0); transform: scale(1); }
 }
 
-#app-header.passphrase-mode.glow span {
-    animation: soft-glow 2s infinite;
-}
+#app-header.passphrase-mode.glow span { animation: soft-glow 2s infinite; }
 
 #chat-container {
     flex: 1;
@@ -131,26 +113,13 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 30px;
     scroll-behavior: smooth;
 }
 
-/* ==========================================================================
-   Chat Bubbles
-   ========================================================================== */
-.message-row {
-    display: flex;
-    width: 100%;
-}
-
-.message-row.user {
-    justify-content: flex-end;
-}
-
-.message-row.rhonda {
-    justify-content: flex-start;
-    flex-direction: column;
-}
+.message-row { display: flex; width: 100%; }
+.message-row.user { justify-content: flex-end; }
+.message-row.rhonda { justify-content: flex-start; flex-direction: column; }
 
 .user .message {
     font-family: var(--font-serif);
@@ -166,14 +135,14 @@ body {
 .rhonda .message {
     font-family: var(--font-serif);
     color: var(--pi-text-dark);
-    font-size: 22px;
-    line-height: 1.45;
+    font-size: 18px; /* Fixed: Smaller, readable font */
+    line-height: 1.5;
     max-width: 75%;
     min-height: 1.45em;
     word-break: break-word;
     unicode-bidi: plaintext;
     background-color: var(--pi-send-inactive);
-    padding: 14px 22px;
+    padding: 16px 24px;
     border-radius: 24px;
 }
 
@@ -198,24 +167,13 @@ body {
     color: var(--pi-text-dark);
     box-shadow: 0 4px 15px rgba(0,0,0,0.06);
     border: 1px solid var(--pi-user-bubble);
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: all 0.2s ease;
 }
 
-.action-icon svg {
-    width: 16px;
-    height: 16px;
-    transition: color 0.2s;
-}
+.action-icon svg { width: 16px; height: 16px; transition: color 0.2s; }
+.action-icon:hover { color: var(--pi-send-active); transform: scale(1.1); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.action-icon.playing { background-color: var(--pi-send-active); color: #FFFFFF; border-color: var(--pi-send-active); }
 
-.action-icon:hover {
-    color: var(--pi-send-active);
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-}
-
-/* ==========================================================================
-   Input Area
-   ========================================================================== */
 .input-wrapper {
     position: fixed;
     bottom: 0;
@@ -238,7 +196,6 @@ body {
     align-items: flex-end;
     gap: 8px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    transition: border 0.3s ease;
 }
 
 #user-input {
@@ -255,10 +212,7 @@ body {
     line-height: 1.4;
     background: transparent;
 }
-
-#user-input::placeholder {
-    color: var(--pi-placeholder);
-}
+#user-input::placeholder { color: var(--pi-placeholder); }
 
 #send-btn, #mic-btn {
     background: none;
@@ -272,26 +226,13 @@ body {
     transition: all 0.2s ease;
     border-radius: 50%;
 }
+#send-btn.active { color: var(--pi-send-active); }
+#mic-btn.listening { color: var(--pi-mic-active); animation: pulse-mic 1.5s infinite ease-in-out; }
 
-#send-btn.active {
-    color: var(--pi-send-active);
-}
+@keyframes pulse-mic { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
 
-#mic-btn.listening {
-    color: var(--pi-mic-active);
-    animation: pulse-mic 1.5s infinite ease-in-out;
-}
+.disclaimer { font-size: 12px; color: var(--pi-muted); margin-top: 12px; text-align: center; }
 
-.disclaimer {
-    font-size: 12px;
-    color: var(--pi-muted);
-    margin-top: 12px;
-    text-align: center;
-}
-
-/* ==========================================================================
-   Intent Grid (Onboarding)
-   ========================================================================== */
 .intent-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -313,28 +254,7 @@ body {
     transition: all 0.2s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,0.03);
 }
-
-.intent-btn:hover {
-    border-color: var(--pi-send-active);
-    color: var(--pi-send-active);
-    box-shadow: 0 4px 12px rgba(15, 121, 75, 0.1);
-}
-
-.intent-btn svg {
-    width: 24px;
-    height: 24px;
-    color: var(--pi-text-dark);
-    transition: color 0.2s;
-}
-
-.intent-btn:hover svg {
-    color: var(--pi-send-active);
-}
-
-.intent-label {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--pi-text-dark);
-    text-align: center;
-    font-family: var(--font-sans);
-}
+.intent-btn:hover { border-color: var(--pi-send-active); color: var(--pi-send-active); box-shadow: 0 4px 12px rgba(15, 121, 75, 0.1); }
+.intent-btn svg { width: 24px; height: 24px; color: var(--pi-text-dark); }
+.intent-btn:hover svg { color: var(--pi-send-active); }
+.intent-label { font-size: 13px; font-weight: 600; color: var(--pi-text-dark); text-align: center; font-family: var(--font-sans); }

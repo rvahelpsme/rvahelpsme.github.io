@@ -2,8 +2,6 @@ import base64
 import os
 import re
 import threading
-from typing import Tuple, Dict, Any, Optional
-
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from supabase import create_client, Client
@@ -42,8 +40,7 @@ supabase: Client = create_client(supabase_url, supabase_key)
 gemini_key = os.environ.get("GEMINI_API_KEY")
 ai_client = genai.Client(api_key=gemini_key) if gemini_key else None
 
-
-def generate_tts_audio(text: str, lang_code: str = 'en') -> Optional[str]:
+def generate_tts_audio(text: str, lang_code: str = 'en'):
     try:
         client = texttospeech.TextToSpeechClient()
         voice_mapping = {
@@ -72,8 +69,7 @@ def _format_suggested_resources(pruned_directory: list, ai_reply: str, state: di
         service_name = resource.get('service_name') or ''
         dict_key = f"{service_name} (via {org_name})" if org_name else service_name
         if (org_name and org_name.lower() in ai_reply.lower()) or (service_name and service_name.lower() in ai_reply.lower()):
-            if "resources_provided" not in state:
-                state["resources_provided"] = {}
+            if "resources_provided" not in state: state["resources_provided"] = {}
             raw_phone = resource.get('phone_number')
             state["resources_provided"][dict_key] = {"phone": raw_phone if raw_phone else "211", "status": "suggested"}
 
@@ -96,8 +92,7 @@ def generate_summary():
     state, _ = get_resident_state(supabase, hash_only=session_hash)
     if not state: return jsonify({"error": "Passport not found"}), 404
     eng_summary, trans_summary, status = execute_summary_prompt(ai_client, state, target_lang)
-    if status == 200:
-        return jsonify({"status": "success", "english": eng_summary, "translated": trans_summary}), 200
+    if status == 200: return jsonify({"status": "success", "english": eng_summary, "translated": trans_summary}), 200
     return jsonify({"error": "Summary generation failed"}), 500
 
 @app.route('/chat', methods=['POST'])
@@ -117,6 +112,12 @@ def chat():
 
     signals = {
         "SIGNAL_INIT": "greeting",
+        "SIGNAL_HOUSING": "housing_prompt",
+        "SIGNAL_FOOD": "food_prompt",
+        "SIGNAL_LEGAL": "legal_prompt",
+        "SIGNAL_HEALTH": "healthcare_prompt",
+        "SIGNAL_TRANSIT": "transportation_prompt",
+        "SIGNAL_WORK": "workforce_prompt",
         "SIGNAL_PRIVACY": "privacy",
         "SIGNAL_PASSPORT_REVEAL": "passport_info",
         "SIGNAL_SUMMARY_HINT": "summary_hint"
@@ -138,14 +139,9 @@ def chat():
             is_new_user = True
 
         reply = RESPONSES[key].get(lang_code, RESPONSES[key]["en"])
-
         payload = {
-            "response": reply,
-            "status": "success",
-            "session_hash": active_hash,
-            "language": lang_code,
-            "is_static": True,
-            "ui_translations": get_ui_payload(lang_code)
+            "response": reply, "status": "success", "session_hash": active_hash, "language": lang_code,
+            "is_static": True, "ui_translations": get_ui_payload(lang_code)
         }
         if is_new_user and new_phrase: payload["new_passphrase"] = new_phrase
         return jsonify(payload), 200
@@ -156,10 +152,7 @@ def chat():
         raw_words = re.sub(r'[^A-Za-z\s]', ' ', user_message).split()
         upper_sequence = sum(1 for w in raw_words if w.isupper() and len(w) > 1)
         if upper_sequence >= 3:
-            return jsonify({
-                "response": "I couldn't find a record for that specific phrase. Please double-check the words or let me know if you'd like to start a new search.",
-                "status": "not_found"
-            }), 200
+            return jsonify({"response": "I couldn't find a record for that specific phrase.", "status": "not_found"}), 200
 
     if word_count == 4:
         admin_state, provider_hash = get_admin_state(supabase, clean_phrase, pepper)
@@ -176,10 +169,7 @@ def chat():
             return jsonify({"response": reply, "status": "not_found"}), 200
         reply, status_code = execute_welcome_prompt(ai_client, user_message, resident_state, clean_phrase)
         return jsonify({
-            "response": reply,
-            "status": "success",
-            "session_hash": passport_hash,
-            "language": resident_state.get("language", "en"),
+            "response": reply, "status": "success", "session_hash": passport_hash, "language": resident_state.get("language", "en"),
             "ui_translations": get_ui_payload(resident_state.get("language", "en"))
         }), status_code
 
@@ -203,12 +193,9 @@ def chat():
         is_vague = len(user_words) < 3 and not is_follow_up
         class_data = {
             "broad_buckets": [k for k, v in state.get("active_intents", {}).items() if v is True],
-            "detected_language": state["language"],
-            "needs_clarification": is_vague,
+            "detected_language": state["language"], "needs_clarification": is_vague,
             "primary_urgency": state.get("active_intents", {}).get("primary"),
-            "specific_intents": [],
-            "is_emergency": False,
-            "static_intent": None
+            "specific_intents": [], "user_demographics": [], "is_emergency": False, "static_intent": None
         }
         class_status = 200
     else:
@@ -230,8 +217,7 @@ def chat():
         return jsonify(payload), 200
 
     state["active_intents"]["primary"] = class_data.get("primary_urgency")
-    for bucket in class_data.get("broad_buckets", []):
-        state["active_intents"][bucket] = True
+    for bucket in class_data.get("broad_buckets", []): state["active_intents"][bucket] = True
 
     pruned_directory = []
     if class_data.get("needs_clarification"):

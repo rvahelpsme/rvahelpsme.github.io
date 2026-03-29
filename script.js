@@ -1,6 +1,3 @@
-// ==========================================================================
-// Configuration & State
-// ==========================================================================
 const CONFIG = {
     isLocal: window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1',
     get backendUrl() { return this.isLocal ? "http://127.0.0.1:8080" : "https://rhonda-backend-1071663876445.us-east4.run.app"; },
@@ -24,16 +21,8 @@ const CONFIG = {
 };
 
 const STATE = {
-    sessionHash: null,
-    lang: 'en',
-    hasEngaged: false,
-    placeholderIdx: 0,
-    timer: null,
-    isListening: false,
-    audio: new Audio(),
-    secretPassphrase: null,
-    dynamicCount: 0,
-    hasRevealedPassport: false
+    sessionHash: null, lang: 'en', hasEngaged: false, placeholderIdx: 0, timer: null,
+    isListening: false, audio: new Audio(), secretPassphrase: null, dynamicCount: 0, hasRevealedPassport: false
 };
 
 const DOM = {
@@ -44,15 +33,9 @@ const DOM = {
     header: document.getElementById('app-header')
 };
 
-// ==========================================================================
-// Speech Recognition
-// ==========================================================================
 const SpeechAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
 const recognition = SpeechAPI ? new SpeechAPI() : null;
-if (recognition) {
-    recognition.continuous = true;
-    recognition.interimResults = true;
-}
+if (recognition) { recognition.continuous = true; recognition.interimResults = true; }
 
 const MicController = {
     start() {
@@ -70,28 +53,18 @@ const MicController = {
         recognition.stop();
         DOM.micBtn.classList.remove('listening');
     },
-    toggle() {
-        STATE.isListening ? this.stop() : this.start();
-    },
+    toggle() { STATE.isListening ? this.stop() : this.start(); },
     handleResult(e) {
         if (!STATE.isListening) return;
         let transcript = '';
-        for (let i = 0; i < e.results.length; ++i) {
-            transcript += e.results[i][0].transcript;
-        }
+        for (let i = 0; i < e.results.length; ++i) transcript += e.results[i][0].transcript;
         DOM.input.value = transcript;
         UI.autoResizeInput();
         UI.toggleSendButton();
     },
-    handleEnd() {
-        DOM.micBtn.classList.remove('listening');
-        STATE.isListening = false;
-    }
+    handleEnd() { DOM.micBtn.classList.remove('listening'); STATE.isListening = false; }
 };
 
-// ==========================================================================
-// UI Controllers
-// ==========================================================================
 const UI = {
     startRotation() {
         if (STATE.hasEngaged) return;
@@ -101,33 +74,23 @@ const UI = {
             DOM.input.dir = CONFIG.rtlIndices.includes(STATE.placeholderIdx) ? "rtl" : "ltr";
         }, CONFIG.rotationIntervalMs);
     },
-    stopRotation() {
-        clearInterval(STATE.timer);
-        DOM.input.placeholder = "";
-        DOM.input.dir = "ltr";
-    },
-    autoResizeInput() {
-        DOM.input.style.height = 'auto';
-        DOM.input.style.height = DOM.input.scrollHeight + 'px';
-    },
+    stopRotation() { clearInterval(STATE.timer); DOM.input.placeholder = ""; DOM.input.dir = "ltr"; },
+    autoResizeInput() { DOM.input.style.height = 'auto'; DOM.input.style.height = DOM.input.scrollHeight + 'px'; },
     toggleSendButton() {
         const hasText = DOM.input.value.trim().length > 0;
         DOM.sendBtn.classList.toggle('active', hasText);
         DOM.sendBtn.disabled = !hasText;
         DOM.input.dir = hasText ? "auto" : "ltr";
     },
-    scrollToBottom() {
-        DOM.chat.scrollTop = DOM.chat.scrollHeight;
-    },
+    scrollToBottom() { DOM.chat.scrollTop = DOM.chat.scrollHeight; },
     showTyping() {
         const indicator = document.getElementById('typing-indicator');
         indicator.style.display = 'flex';
         DOM.chat.appendChild(indicator);
         this.scrollToBottom();
     },
-    hideTyping() {
-        document.getElementById('typing-indicator').style.display = 'none';
-    },
+    hideTyping() { document.getElementById('typing-indicator').style.display = 'none'; },
+
     appendUserMessage(text) {
         const row = document.createElement('div');
         row.className = 'message-row user';
@@ -138,11 +101,15 @@ const UI = {
         DOM.chat.appendChild(row);
         this.scrollToBottom();
     },
-    appendRhondaMessage(text, lang) {
+
+    appendRhondaMessage(text, lang, isGreeting = false) {
         const row = document.createElement('div');
         row.className = 'message-row rhonda';
         const msg = document.createElement('div');
         msg.className = 'message';
+        // Give the initial greeting an explicit ID so retroactive translations find the right box
+        if (isGreeting) msg.id = 'greeting-bubble';
+
         msg.innerHTML = text.replace(/\n/g, '<br>');
 
         const actions = document.createElement('div');
@@ -160,24 +127,27 @@ const UI = {
         DOM.chat.appendChild(row);
         this.scrollToBottom();
     },
+
     updateLocalizedUI(translations) {
-        const firstRhondaMsg = document.querySelector('.message-row.rhonda .message');
-        if (firstRhondaMsg) {
-            firstRhondaMsg.innerHTML = translations.greeting.replace(/\n/g, '<br>');
+        // ONLY targets the greeting bubble to prevent overwriting typing dots
+        const greetingMsg = document.getElementById('greeting-bubble');
+        if (greetingMsg) {
+            greetingMsg.innerHTML = translations.greeting.replace(/\n/g, '<br>');
         }
+
         const labels = translations.button_labels;
         const grid = document.querySelector('.intent-grid');
-        if (grid) {
+        if (grid && labels) {
             const btnMap = {
-                'housing': labels.housing,
-                'food': labels.food,
-                'legal': labels.legal,
-                'healthcare': labels.health,
-                'transportation': labels.transit,
-                'job': labels.education
+                'SIGNAL_HOUSING': labels.housing,
+                'SIGNAL_FOOD': labels.food,
+                'SIGNAL_LEGAL': labels.legal,
+                'SIGNAL_HEALTH': labels.health,
+                'SIGNAL_TRANSIT': labels.transit,
+                'SIGNAL_WORK': labels.education
             };
             grid.querySelectorAll('.intent-btn').forEach(btn => {
-                const onclickStr = btn.getAttribute('onclick').toLowerCase();
+                const onclickStr = btn.getAttribute('onclick');
                 for (const [key, text] of Object.entries(btnMap)) {
                     if (onclickStr.includes(key)) {
                         const labelSpan = btn.querySelector('.intent-label');
@@ -187,6 +157,7 @@ const UI = {
             });
         }
     },
+
     renderIntentGrid(labels) {
         const l = labels || { housing: "Housing", food: "Food", legal: "Legal", health: "Health", transit: "Transit", education: "Education" };
         const oldGrid = document.querySelector('.intent-grid');
@@ -196,28 +167,29 @@ const UI = {
         wrapper.className = `message-row rhonda`;
         wrapper.innerHTML = `
             <div class="intent-grid">
-                <button class="intent-btn" onclick="API.sendMessage('I need help with housing.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_HOUSING')">
                     ${CONFIG.icons.housing} <span class="intent-label">${l.housing}</span>
                 </button>
-                <button class="intent-btn" onclick="API.sendMessage('I need help getting food.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_FOOD')">
                     ${CONFIG.icons.food} <span class="intent-label">${l.food}</span>
                 </button>
-                <button class="intent-btn" onclick="API.sendMessage('I need legal assistance.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_LEGAL')">
                     ${CONFIG.icons.legal} <span class="intent-label">${l.legal}</span>
                 </button>
-                <button class="intent-btn" onclick="API.sendMessage('I need healthcare services.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_HEALTH')">
                     ${CONFIG.icons.health} <span class="intent-label">${l.health}</span>
                 </button>
-                <button class="intent-btn" onclick="API.sendMessage('I need help with transportation.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_TRANSIT')">
                     ${CONFIG.icons.transit} <span class="intent-label">${l.transit}</span>
                 </button>
-                <button class="intent-btn" onclick="API.sendMessage('I am looking for job training.')">
+                <button class="intent-btn" onclick="API.sendMessage('SIGNAL_WORK')">
                     ${CONFIG.icons.work} <span class="intent-label">${l.education}</span>
                 </button>
             </div>`;
         DOM.chat.appendChild(wrapper);
         this.scrollToBottom();
     },
+
     clearInput() {
         DOM.input.value = '';
         this.autoResizeInput();
@@ -225,55 +197,47 @@ const UI = {
     }
 };
 
-// ==========================================================================
-// API Logic
-// ==========================================================================
 const API = {
     async fetchAudio(text, btn, lang) {
         btn.classList.add('playing');
         try {
             const res = await fetch(`${CONFIG.backendUrl}/tts`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text, lang })
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, lang })
             });
             const data = await res.json();
             if (data.audio_base64) {
                 STATE.audio.src = `data:audio/mp3;base64,${data.audio_base64}`;
                 STATE.audio.play();
                 STATE.audio.onended = () => btn.classList.remove('playing');
-            } else {
-                btn.classList.remove('playing');
-            }
-        } catch (e) {
-            btn.classList.remove('playing');
-        }
+            } else { btn.classList.remove('playing'); }
+        } catch (e) { btn.classList.remove('playing'); }
     },
 
     async sendMessage(triggerText = null, isHidden = false) {
         const text = triggerText || DOM.input.value.trim();
         if (!text) return;
 
-        if (!isHidden && !text.startsWith("SIGNAL_")) {
+        const isSignal = text.startsWith("SIGNAL_");
+
+        if (!isHidden && !isSignal) {
             STATE.hasEngaged = true;
             UI.stopRotation();
             MicController.stop();
             UI.appendUserMessage(text);
             UI.clearInput();
-        }
-
-        if (!isHidden) {
+            UI.showTyping();
+        } else if (isSignal && text !== "SIGNAL_INIT") {
+            // Even if it's a silent button signal, show typing to make it feel natural
             UI.showTyping();
         }
 
-        if (!isHidden && text !== "SIGNAL_INIT") {
+        // Masking: Fire Onboarding while Gemini thinks
+        if (!isHidden && !isSignal) {
             STATE.dynamicCount++;
-
             if (STATE.dynamicCount === 1) {
                 setTimeout(() => this.sendMessage("SIGNAL_PRIVACY", true), 1000);
             }
-
-            if (STATE.dynamicCount === 3 && !STATE.hasRevealedPassport && STATE.secretPassphrase) {
+            if (STATE.dynamicCount === 2 && !STATE.hasRevealedPassport && STATE.secretPassphrase) {
                 STATE.hasRevealedPassport = true;
                 setTimeout(() => {
                     DOM.header.innerHTML = `<span>${STATE.secretPassphrase}</span>`;
@@ -292,7 +256,7 @@ const API = {
             });
             const data = await res.json();
 
-            if (!isHidden) UI.hideTyping();
+            if (!isHidden && text !== "SIGNAL_INIT") UI.hideTyping();
 
             if (res.ok && data.status === 'success') {
                 if (data.session_hash) STATE.sessionHash = data.session_hash;
@@ -304,11 +268,11 @@ const API = {
                 }
 
                 if (text === "SIGNAL_INIT") {
-                    UI.appendRhondaMessage(data.response, STATE.lang);
+                    UI.appendRhondaMessage(data.response, STATE.lang, true);
                     UI.renderIntentGrid(data.ui_translations?.button_labels);
                 } else {
                     const grid = document.querySelector('.intent-grid');
-                    if (grid) grid.closest('.message-row').remove();
+                    if (grid && !isHidden) grid.closest('.message-row').remove();
 
                     UI.appendRhondaMessage(data.response, STATE.lang);
                 }
@@ -322,23 +286,13 @@ const API = {
     }
 };
 
-// ==========================================================================
-// Initialization & Listeners
-// ==========================================================================
+// Initialization
 DOM.input.addEventListener('focus', UI.stopRotation);
-DOM.input.addEventListener('blur', () => {
-    if (!DOM.input.value.trim() && !STATE.hasEngaged) UI.startRotation();
-});
-DOM.input.addEventListener('input', () => {
-    UI.autoResizeInput();
-    UI.toggleSendButton();
-});
+DOM.input.addEventListener('blur', () => { if (!DOM.input.value.trim() && !STATE.hasEngaged) UI.startRotation(); });
+DOM.input.addEventListener('input', () => { UI.autoResizeInput(); UI.toggleSendButton(); });
 DOM.input.addEventListener('keydown', (e) => {
     MicController.stop();
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        if (!DOM.sendBtn.disabled) API.sendMessage();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!DOM.sendBtn.disabled) API.sendMessage(); }
 });
 DOM.sendBtn.addEventListener('click', () => API.sendMessage());
 
@@ -356,12 +310,10 @@ DOM.header.addEventListener('click', async () => {
 
     try {
         const res = await fetch(`${CONFIG.backendUrl}/summary`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ session_hash: STATE.sessionHash, lang: STATE.lang })
         });
         const data = await res.json();
-
         if (res.ok && data.status === 'success') {
             const cardHtml = `
                 <div class="summary-card" style="background:#FFF; border:2px solid var(--pi-send-active); border-radius:24px; padding:20px; margin-top:10px;">
@@ -370,17 +322,14 @@ DOM.header.addEventListener('click', async () => {
                         <div style="flex:1; border-right:1px solid var(--pi-user-bubble); padding-right:15px;">${data.english}</div>
                         <div style="flex:1;" dir="auto">${data.translated}</div>
                     </div>
-                </div>
-            `;
+                </div>`;
             const row = document.createElement('div');
             row.className = 'message-row rhonda';
             row.innerHTML = cardHtml;
             DOM.chat.appendChild(row);
             UI.scrollToBottom();
         }
-    } catch (err) {
-        UI.appendRhondaMessage("Failed to generate summary.", STATE.lang);
-    }
+    } catch (err) { UI.appendRhondaMessage("Failed to generate summary.", STATE.lang); }
 });
 
 UI.startRotation();
