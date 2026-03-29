@@ -8,7 +8,17 @@ Thriving and inclusive communities
 
 ## User
 
-Richmond residents—especially immigrants, refugees, and those facing housing or financial instability—struggle to safely find and access existing support services.
+Richmond residents—especially immigrants, refugees, and those facing housing or financial instability—struggle to safely find and access existing support services. They constantly have to repeat the facts of their hardships over and over because there's no summary handoff between agencies and support services.
+
+## Rhonda
+
+Rhonda listens to a user's description of their needs, in any language, replies to them with empathy and understanding. Using a human-verified repositority of local services, Rhonda can make the best suggestions for that user's issues.
+
+Users can return to their progress with Rhonda using a simple anonymous passphrase.
+
+Rhonda generates a "Progress Passport" in English and the user's language that can be displayed to social workers and other support staff to immediately know the user's situation and services connected with so far, speeding up intake, promoting cross-agency communication, and preventing the user from having to repeat traumatic details.
+
+The application never stores any Personally Identifiable Information, not even analytics or tracking logs.
 
 ## Problem
 
