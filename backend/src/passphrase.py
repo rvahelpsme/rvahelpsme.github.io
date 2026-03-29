@@ -6,6 +6,7 @@ import re
 import datetime
 from typing import Tuple, Optional
 
+
 def _load_wordlist_internal() -> list:
     base_dir = os.path.dirname(os.path.dirname(__file__))
     path = os.path.join(base_dir, 'eff_wordlist.txt')
@@ -22,11 +23,14 @@ def _load_wordlist_internal() -> list:
     except FileNotFoundError:
         raise ValueError(f"Wordlist not at {path}")
 
+
 WORDLIST = _load_wordlist_internal()
 WORDLIST_SET = set(WORDLIST)
 
+
 def generate_passphrase(num_words: int = 3) -> str:
     return " ".join([secrets.choice(WORDLIST) for _ in range(num_words)])
+
 
 def get_passphrase_hash(plain_phrase: str, pepper: str) -> str:
     if not pepper:
@@ -34,6 +38,7 @@ def get_passphrase_hash(plain_phrase: str, pepper: str) -> str:
     return binascii.hexlify(
         hashlib.pbkdf2_hmac('sha256', plain_phrase.encode('utf-8'), pepper.encode('utf-8'), 100000)
     ).decode('ascii')
+
 
 def is_passphrase_in_use(supabase_client, plain_phrase: str, pepper: str) -> bool:
     words = plain_phrase.split()
@@ -46,13 +51,16 @@ def is_passphrase_in_use(supabase_client, plain_phrase: str, pepper: str) -> boo
             return True
         prefix_phrase = " ".join(words[:3])
         suffix_phrase = " ".join(words[1:])
-        return is_passphrase_in_use(supabase_client, prefix_phrase, pepper) or is_passphrase_in_use(supabase_client, suffix_phrase, pepper)
+        return is_passphrase_in_use(supabase_client, prefix_phrase, pepper) or is_passphrase_in_use(supabase_client,
+                                                                                                    suffix_phrase,
+                                                                                                    pepper)
 
     if count == 3:
         res = supabase_client.table('passports').select('passphrase_hash').eq('passphrase_hash', hashed).execute()
         return len(res.data) > 0
 
     raise ValueError(f"Invalid passphrase length: {count}")
+
 
 def extract_passphrase(text: str) -> Tuple[Optional[str], int]:
     if not text:
@@ -82,6 +90,7 @@ def extract_passphrase(text: str) -> Tuple[Optional[str], int]:
 
     return (first_triplet, 3) if first_triplet else (None, 0)
 
+
 def create_new_passport(supabase_client, pepper: str) -> Tuple[dict, str, str]:
     while True:
         new_phrase = generate_passphrase(3)
@@ -89,6 +98,9 @@ def create_new_passport(supabase_client, pepper: str) -> Tuple[dict, str, str]:
             break
 
     new_hash = get_passphrase_hash(new_phrase, pepper)
+
+    # SECURITY FIX: The plain-text passphrase is NO LONGER stored in the database state_json.
+    # It is only returned once to the frontend to hold in local memory.
     default_state = {
         "language": "pending",
         "intake_prep": {},
@@ -104,12 +116,15 @@ def create_new_passport(supabase_client, pepper: str) -> Tuple[dict, str, str]:
 
     return default_state, new_hash, new_phrase
 
-def get_resident_state(supabase_client, phrase: str = None, pepper: str = None, hash_only: str = None) -> Tuple[Optional[dict], Optional[str]]:
+
+def get_resident_state(supabase_client, phrase: str = None, pepper: str = None, hash_only: str = None) -> Tuple[
+    Optional[dict], Optional[str]]:
     target_hash = hash_only if hash_only else get_passphrase_hash(phrase, pepper)
     response = supabase_client.table('passports').select('state_json').eq('passphrase_hash', target_hash).execute()
     if response.data:
         return response.data[0]['state_json'], target_hash
     return None, None
+
 
 def get_admin_state(supabase_client, phrase: str, pepper: str) -> Tuple[Optional[dict], Optional[str]]:
     target_hash = get_passphrase_hash(phrase, pepper)
@@ -117,6 +132,7 @@ def get_admin_state(supabase_client, phrase: str, pepper: str) -> Tuple[Optional
     if response.data:
         return {"role": "admin"}, target_hash
     return None, None
+
 
 def save_resident_state_async(supabase_client, target_hash: str, state: dict) -> None:
     try:
@@ -126,6 +142,7 @@ def save_resident_state_async(supabase_client, target_hash: str, state: dict) ->
         }).eq('passphrase_hash', target_hash).execute()
     except Exception as e:
         print(f"Error saving resident state: {e}")
+
 
 def save_admin_updates_async(supabase_client, provider_hash: str, updates: dict) -> None:
     if not updates or not isinstance(updates, dict):
