@@ -107,7 +107,6 @@ const UI = {
         row.className = 'message-row rhonda';
         const msg = document.createElement('div');
         msg.className = 'message';
-        // Give the initial greeting an explicit ID so retroactive translations find the right box
         if (isGreeting) msg.id = 'greeting-bubble';
 
         msg.innerHTML = text.replace(/\n/g, '<br>');
@@ -129,7 +128,6 @@ const UI = {
     },
 
     updateLocalizedUI(translations) {
-        // ONLY targets the greeting bubble to prevent overwriting typing dots
         const greetingMsg = document.getElementById('greeting-bubble');
         if (greetingMsg) {
             greetingMsg.innerHTML = translations.greeting.replace(/\n/g, '<br>');
@@ -227,24 +225,18 @@ const API = {
             UI.clearInput();
             UI.showTyping();
         } else if (isSignal && text !== "SIGNAL_INIT") {
-            // Even if it's a silent button signal, show typing to make it feel natural
             UI.showTyping();
         }
 
-        // Masking: Fire Onboarding while Gemini thinks
+        // SILENT MORPH: No spammy text messages, just gracefully reveal the passport on first organic engagement
         if (!isHidden && !isSignal) {
             STATE.dynamicCount++;
-            if (STATE.dynamicCount === 1) {
-                setTimeout(() => this.sendMessage("SIGNAL_PRIVACY", true), 1000);
-            }
-            if (STATE.dynamicCount === 2 && !STATE.hasRevealedPassport && STATE.secretPassphrase) {
+            if (STATE.dynamicCount === 1 && !STATE.hasRevealedPassport && STATE.secretPassphrase) {
                 STATE.hasRevealedPassport = true;
                 setTimeout(() => {
                     DOM.header.innerHTML = `<span>${STATE.secretPassphrase}</span>`;
                     DOM.header.classList.add("passphrase-mode", "glow");
-                    this.sendMessage("SIGNAL_PASSPORT_REVEAL", true);
                 }, 1500);
-                setTimeout(() => this.sendMessage("SIGNAL_SUMMARY_HINT", true), 6000);
             }
         }
 
@@ -271,9 +263,7 @@ const API = {
                     UI.appendRhondaMessage(data.response, STATE.lang, true);
                     UI.renderIntentGrid(data.ui_translations?.button_labels);
                 } else {
-                    const grid = document.querySelector('.intent-grid');
-                    if (grid && !isHidden) grid.closest('.message-row').remove();
-
+                    // DO NOT DELETE THE GRID. Let users always have access to the buttons.
                     UI.appendRhondaMessage(data.response, STATE.lang);
                 }
             }
@@ -286,7 +276,6 @@ const API = {
     }
 };
 
-// Initialization
 DOM.input.addEventListener('focus', UI.stopRotation);
 DOM.input.addEventListener('blur', () => { if (!DOM.input.value.trim() && !STATE.hasEngaged) UI.startRotation(); });
 DOM.input.addEventListener('input', () => { UI.autoResizeInput(); UI.toggleSendButton(); });
@@ -306,7 +295,6 @@ if (recognition) {
 DOM.header.addEventListener('click', async () => {
     if (!DOM.header.classList.contains('passphrase-mode')) return;
     DOM.header.classList.remove('glow');
-    UI.appendRhondaMessage("Generating your bilingual provider summary...", STATE.lang);
 
     try {
         const res = await fetch(`${CONFIG.backendUrl}/summary`, {
@@ -316,11 +304,11 @@ DOM.header.addEventListener('click', async () => {
         const data = await res.json();
         if (res.ok && data.status === 'success') {
             const cardHtml = `
-                <div class="summary-card" style="background:#FFF; border:2px solid var(--pi-send-active); border-radius:24px; padding:20px; margin-top:10px;">
-                    <div style="color:var(--pi-send-active); font-weight:bold; margin-bottom:15px; text-transform:uppercase; font-size:14px;">Provider Handoff Summary</div>
-                    <div style="display:flex; gap:15px;">
-                        <div style="flex:1; border-right:1px solid var(--pi-user-bubble); padding-right:15px;">${data.english}</div>
-                        <div style="flex:1;" dir="auto">${data.translated}</div>
+                <div class="summary-card" style="background:#FFF; border:2px solid var(--pi-send-active); border-radius:16px; padding:20px; margin-top:10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <div style="color:var(--pi-send-active); font-weight:800; margin-bottom:15px; text-transform:uppercase; font-size:13px; letter-spacing: 1px;">Provider Handoff Summary</div>
+                    <div style="display:flex; flex-direction: column; gap:15px; font-size: 15px; line-height: 1.5;">
+                        <div style="border-bottom:1px solid var(--pi-user-bubble); padding-bottom:15px;">${data.english}</div>
+                        <div dir="auto">${data.translated}</div>
                     </div>
                 </div>`;
             const row = document.createElement('div');

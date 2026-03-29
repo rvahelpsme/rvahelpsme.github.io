@@ -2,6 +2,8 @@ import base64
 import os
 import re
 import threading
+from typing import Tuple, Dict, Any, Optional
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from supabase import create_client, Client
@@ -117,10 +119,7 @@ def chat():
         "SIGNAL_LEGAL": "legal_prompt",
         "SIGNAL_HEALTH": "healthcare_prompt",
         "SIGNAL_TRANSIT": "transportation_prompt",
-        "SIGNAL_WORK": "workforce_prompt",
-        "SIGNAL_PRIVACY": "privacy",
-        "SIGNAL_PASSPORT_REVEAL": "passport_info",
-        "SIGNAL_SUMMARY_HINT": "summary_hint"
+        "SIGNAL_WORK": "workforce_prompt"
     }
 
     if user_message in signals:

@@ -59,7 +59,9 @@ def build_prompt(prompt_type: str, user_message: str, state: Optional[dict] = No
         target_lang = state.get('language', 'en') if state else 'en'
         stack.extend([
             "\n--- ACTION: GENERATE PROVIDER SUMMARY ---",
-            f"Review the CURRENT STATE object. Write a short, professional bulleted summary of the user's needs to hand to a social worker. Output it once in English, and once translated into the language code: '{target_lang}'.",
+            f"Review the CURRENT STATE object. Write a professional summary of the user's needs, family size, and history to hand to a social worker.",
+            "CRITICAL FORMATTING: You MUST format the summary as an HTML unordered list using <ul> and <li> tags. Do not use markdown (* or -) or raw text blocks.",
+            f"Output it once in English, and once translated into the language code: '{target_lang}'.",
             "\n--- CURRENT STATE ---", json.dumps(state or {}, indent=2)
         ])
 

@@ -1,3 +1,6 @@
+import traceback
+
+
 def search_and_prune_directory(supabase_client, classifier_data: dict, locked_lang: str) -> list:
     try:
         response = supabase_client.table('resources').select('*').eq('is_active', True).execute()
@@ -23,12 +26,12 @@ def search_and_prune_directory(supabase_client, classifier_data: dict, locked_la
         if not isinstance(db_tags, list): db_tags = [db_tags]
         db_tags_lower = {str(t).lower().strip() for t in db_tags}
 
-        # RELEVANCE SCORING
+        # RELEVANCE SCORING: Massive weight to specific intent matches
         score = 0
         for intent in specific:
-            if intent in db_tags_lower: score += 10
+            if intent in db_tags_lower: score += 50
         for bucket in broad:
-            if bucket in db_tags_lower: score += 1
+            if bucket in db_tags_lower: score += 5
 
         if score == 0: continue
 
@@ -40,13 +43,13 @@ def search_and_prune_directory(supabase_client, classifier_data: dict, locked_la
         is_general = any(pop in db_pops_lower for pop in ['everyone', 'general public', 'all', 'adults', 'individuals'])
         if not is_general:
             if not user_demographics.intersection(db_pops_lower):
-                continue  # Skip resource if demographic doesn't explicitly match
+                continue
 
         for key in base_keys_to_remove:
             resource.pop(key, None)
 
         scored_resources.append((score, resource))
 
-    # Sort by highest score first, return top 10 for Gemini to choose from
+    # Sort by highest score first, return top 5
     scored_resources.sort(key=lambda x: x[0], reverse=True)
-    return [r[1] for r in scored_resources[:10]]
+    return [r[1] for r in scored_resources[:5]]
