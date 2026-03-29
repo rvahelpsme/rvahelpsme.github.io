@@ -1,4 +1,14 @@
 RESPONSES = {
+"button_labels": {
+        "en": {"housing": "Housing", "food": "Food", "legal": "Legal", "health": "Health", "transit": "Transit", "education": "Education"},
+        "es": {"housing": "Vivienda", "food": "Comida", "legal": "Legal", "health": "Salud", "transit": "Transporte", "education": "Educación"},
+        "ar": {"housing": "الإسكان", "food": "الغذاء", "legal": "القانوني", "health": "الصحة", "transit": "النقل", "education": "التعليم"},
+        "fa": {"housing": "مسکن", "food": "غذا", "legal": "حقوقی", "health": "بهداشت", "transit": "حمل و نقل", "education": "آموزش"},
+        "ps": {"housing": "کور", "food": "خواړه", "legal": "قانوني", "health": "روغتیا", "transit": "ټرانسپورټ", "education": "زده کړه"},
+        "pt": {"housing": "Habitação", "food": "Alimentação", "legal": "Jurídico", "health": "Saúde", "transit": "Transporte", "education": "Educação"},
+        "ne": {"housing": "आवास", "food": "खाना", "legal": "कानूनी", "health": "स्वास्थ्य", "transit": "यातायात", "education": "शिक्षा"},
+        "my": {"housing": "အိမ်ရာ", "food": "အစားအသောက်", "legal": "ဥပဒေရေးရာ", "health": "ကျန်းမာရေး", "transit": "သယ်ယူပို့ဆောင်ရေး", "education": "ပညာရေး"}
+    },
         "greeting": {
             "en": "Hello, I'm Rhonda, your personal navigator to all types of help the City of Richmond can provide. Below are just some of the categories I can help you understand, select one or just start chatting below. You can also ask me about myself, including all the ways I make sure to never store anything about your identity.",
             "es": "Hola, soy Rhonda, tu guía personal para todos los tipos de ayuda que la Ciudad de Richmond puede ofrecer. A continuación se muestran solo algunas de las categorías que puedo ayudarte a entender, selecciona una o simplemente comienza a chatear abajo. También puedes preguntarme sobre mí, incluyendo todas las formas en que me aseguro de no guardar nunca nada sobre tu identidad.",
