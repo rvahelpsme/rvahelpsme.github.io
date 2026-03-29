@@ -2,7 +2,7 @@
 
 Team: RVAHelpsMe
 
-We built Rhonda, a low-latency stateless navigator of local resources based on the communicated needs of the user that can summarize their issues for handoff to any agency, remember their progress to continue on another machine, while still never keeping any personal information. It's multilingual, accessible, empathetic, and completely anonymous.
+We built Rhonda, a low-latency navigator of local resources based on the communicated needs of the user that can summarize their issues for handoff to any agency, remember their progress to continue on another machine, while still never keeping any personal information. It's multilingual, accessible, empathetic, and completely anonymous.
 
 ## Pillar
 
